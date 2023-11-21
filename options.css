@@ -1,0 +1,121 @@
+/* Adjust the label and checkbox alignment */
+.checkbox-label {
+  display: flex;
+  align-items: center; /* Aligns items vertically in the center */
+  margin-bottom: 8px; /* Adds some space below each checkbox-label pair */
+}
+
+/* Style for the checkbox */
+.checkbox-label input[type="checkbox"] {
+  margin-right: 10px; /* Adds space between the checkbox and the label text */
+}
+
+/* Style for the label */
+.checkbox-label label {
+  font-size: 16px; /* Adjust font-size as needed for consistency */
+  color: #333; /* Set the text color for better readability */
+}
+
+/* Style for the container of checkboxes for overall alignment */
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between each checkbox-label pair */
+}
+
+/* General styles */
+body {
+  font-family: Arial, sans-serif;
+}
+
+h1,
+h2,
+p {
+  color: #333;
+}
+
+h2 {
+  margin-top: 30px;
+}
+
+/* Checkbox styles */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.checkbox-label label {
+  font-size: 14px;
+}
+
+/* Description text styles */
+.description {
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+#domainListContainer {
+  margin-bottom: 10px;
+}
+
+#excludedDomainsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#excludedDomainsList li {
+  background-color: #f0f0f0;
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#excludedDomainsList li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+#domainInputContainer {
+  display: flex;
+  gap: 10px;
+}
+
+#newDomain {
+  flex-grow: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#addDomain {
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#addDomain:hover {
+  background-color: #45a049;
+}
+
+.description {
+  font-size: 0.9em;
+  color: #666;
+}

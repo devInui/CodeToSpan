@@ -1,0 +1,5 @@
+{
+  "Description": {
+    "message": "Corrects translation errors in programming docs by replacing code tags with span tags, enhancing readability."
+  }
+}
