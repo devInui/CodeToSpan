@@ -74,6 +74,7 @@ function processCodeTag(node) {
     newElem.setAttribute(attr.name, attr.value);
   });
   newElem.style.cssText = styleCssText;
+  newElem.classList.add("processed-code-tag-by-CodeToSpan");
 
   return { originalClone, newElem };
 }
@@ -127,11 +128,15 @@ function replaceCodeTagsForNode(node) {
     parent.replaceChild(newElem, node);
     applyVisualStylesSafely(newElem, originalStyle);
   } else if (isAlreadyProcessed) {
-    //一度処理されたコードタグが、JSで上書きされobserverで検出された場合の処理
+    // 一度処理されたコードタグが、JSで上書きされobserverで検出された場合の処理
     const existingSpan = node.nextElementSibling;
     const spanStyle = { ...getComputedStyle(existingSpan) }; // getComputedStyleは参照であることに注意
-    if (existingSpan && existingSpan.tagName.toLowerCase() === "span") {
-      const { newElem } = processCodeTag(node);
+    if (
+      existingSpan &&
+      existingSpan.classList.contains("processed-code-tag-by-CodeToSpan")
+    ) {
+      // processCodeTagにdisplay:noneへ加工済みのnodeを入れないよう注意
+      const { newElem } = processCodeTag(existingSpan);
 
       parent.replaceChild(newElem, existingSpan);
       applyVisualStylesSafely(newElem, spanStyle);
