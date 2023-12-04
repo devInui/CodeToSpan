@@ -131,9 +131,6 @@ function replaceCodeTagsForNode(node) {
     if (existingSpan && existingSpan.tagName.toLowerCase() === "span") {
       const { newElem } = processCodeTag(node);
 
-      // spanノードをインラインに設定する
-      newElem.style.display = "inline";
-
       parent.replaceChild(newElem, existingSpan);
       applyVisualStylesSafely(newElem, spanStyle);
     }
