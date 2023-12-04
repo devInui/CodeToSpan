@@ -64,7 +64,7 @@ function processCodeTag(node) {
   const originalClone = node.cloneNode(true);
   const styleCssText = getComputedStyle(node).cssText; // getComputedStyleは参照であることに注意
   originalClone.style.display = "none";
-  originalClone.classList.add("processed-code-tag");
+  originalClone.classList.add("processed-code-tag-by-CodeToSpan");
 
   const newElem = document.createElement("span");
   while (node.firstChild) {
@@ -113,7 +113,9 @@ function replaceCodeTagsForNode(node) {
   const displayStyle = getComputedStyle(node).display;
   const originalStyle = { ...getComputedStyle(node) }; // getComputedStyleは参照であることに注意
 
-  const isAlreadyProcessed = node.classList.contains("processed-code-tag");
+  const isAlreadyProcessed = node.classList.contains(
+    "processed-code-tag-by-CodeToSpan",
+  );
   if (
     !isAlreadyProcessed &&
     shouldReplace(displayStyle) &&
