@@ -71,7 +71,9 @@ function processCodeTag(node) {
     newElem.appendChild(node.firstChild);
   }
   Array.from(node.attributes).forEach((attr) => {
-    newElem.setAttribute(attr.name, attr.value);
+    if (attr.name !== "class" || !attr.value.includes("notranslate")) {
+      newElem.setAttribute(attr.name, attr.value);
+    }
   });
   newElem.style.cssText = styleCssText;
   newElem.classList.add("processed-code-tag-by-CodeToSpan");
