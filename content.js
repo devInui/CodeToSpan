@@ -62,6 +62,7 @@ function isLanguageDifferent() {
 // <code> タグの処理：スパン要素に変換し、オリジナルのスタイルを保持
 function processCodeTag(node) {
   const originalClone = node.cloneNode(true);
+  const styleCssText = getComputedStyle(node).cssText; // getComputedStyleは参照であることに注意
   originalClone.style.display = "none";
   originalClone.classList.add("processed-code-tag");
 
@@ -72,8 +73,7 @@ function processCodeTag(node) {
   Array.from(node.attributes).forEach((attr) => {
     newElem.setAttribute(attr.name, attr.value);
   });
-  const style = getComputedStyle(node);
-  newElem.style.cssText = style.cssText;
+  newElem.style.cssText = styleCssText;
 
   return { originalClone, newElem };
 }
@@ -111,6 +111,7 @@ function applyVisualStylesSafely(newElem, style) {
 function replaceCodeTagsForNode(node) {
   const parent = node.parentNode;
   const displayStyle = getComputedStyle(node).display;
+  const originalStyle = { ...getComputedStyle(node) }; // getComputedStyleは参照であることに注意
 
   const isAlreadyProcessed = node.classList.contains("processed-code-tag");
   if (
@@ -122,10 +123,11 @@ function replaceCodeTagsForNode(node) {
 
     parent.insertBefore(originalClone, node);
     parent.replaceChild(newElem, node);
-    applyVisualStylesSafely(newElem, getComputedStyle(node));
+    applyVisualStylesSafely(newElem, originalStyle);
   } else if (isAlreadyProcessed) {
     //一度処理されたコードタグが、JSで上書きされobserverで検出された場合の処理
     const existingSpan = node.nextElementSibling;
+    const spanStyle = { ...getComputedStyle(existingSpan) }; // getComputedStyleは参照であることに注意
     if (existingSpan && existingSpan.tagName.toLowerCase() === "span") {
       const { newElem } = processCodeTag(node);
 
@@ -133,7 +135,7 @@ function replaceCodeTagsForNode(node) {
       newElem.style.display = "inline";
 
       parent.replaceChild(newElem, existingSpan);
-      applyVisualStylesSafely(newElem, getComputedStyle(node));
+      applyVisualStylesSafely(newElem, spanStyle);
     }
   }
 }
