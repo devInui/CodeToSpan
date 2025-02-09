@@ -62,18 +62,9 @@ function updateExcludedDomainsList() {
 }
 
 function initializeEventListeners() {
-  document
-    .getElementById("excludePre")
-    .addEventListener("change", saveExcludedTags);
-  document
-    .getElementById("excludeDiv")
-    .addEventListener("change", saveExcludedTags);
-  document
-    .getElementById("excludeA")
-    .addEventListener("change", saveExcludedTags);
-  document
-    .getElementById("excludeSpan")
-    .addEventListener("change", saveExcludedTags);
+  ["excludePre", "excludeDiv", "excludeA", "excludeSpan"].forEach((id) => {
+    document.getElementById(id).addEventListener("change", saveExcludedTags);
+  });
 
   document
     .getElementById("skipStyledCodeTags")
