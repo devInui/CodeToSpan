@@ -223,7 +223,7 @@ function notifyUserToReload() {
   notification.style.position = "fixed";
   notification.style.bottom = "10px";
   notification.style.right = "10px";
-  notification.style.backgroundColor = "red";
+  notification.style.backgroundColor = "#4ba5f0";
   notification.style.color = "white";
   notification.style.padding = "10px";
   notification.style.borderRadius = "5px";

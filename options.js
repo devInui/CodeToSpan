@@ -30,7 +30,9 @@ function loadSettings() {
 
 function updateExcludedDomainsList(domains) {
   var list = document.getElementById("excludedDomainsList");
-  list.innerHTML = "";
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
 
   domains.forEach(function (domain) {
     var li = document.createElement("li");
