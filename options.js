@@ -4,34 +4,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadSettings() {
-  loadExcludedTags();
-  loadSkipStyledCodeTags();
-  loadTranslateSettings();
-  updateExcludedDomainsList();
-}
-
-function loadExcludedTags() {
-  chrome.storage.sync.get({ excludedTags: {} }, function (data) {
-    document.getElementById("excludePre").checked = !!data.excludedTags["pre"];
-    document.getElementById("excludeDiv").checked = !!data.excludedTags["div"];
-    document.getElementById("excludeA").checked = !!data.excludedTags["a"];
-    document.getElementById("excludeSpan").checked =
-      !!data.excludedTags["span"];
-  });
-}
-
-function loadSkipStyledCodeTags() {
-  chrome.storage.sync.get({ skipStyledCodeTags: false }, function (data) {
-    document.getElementById("skipStyledCodeTags").checked =
-      data.skipStyledCodeTags;
-  });
-}
-
-function loadTranslateSettings() {
-  chrome.storage.sync.get({ addTranslateNo: false }, function (data) {
-    document.getElementById("addNoTranslateToPre").checked =
-      data.addTranslateNo;
-  });
+  chrome.storage.sync.get(
+    {
+      excludedTags: {},
+      skipStyledCodeTags: false,
+      addTranslateNo: false,
+      excludedDomains: [],
+    },
+    function (data) {
+      document.getElementById("excludePre").checked =
+        !!data.excludedTags["pre"];
+      document.getElementById("excludeDiv").checked =
+        !!data.excludedTags["div"];
+      document.getElementById("excludeA").checked = !!data.excludedTags["a"];
+      document.getElementById("excludeSpan").checked =
+        !!data.excludedTags["span"];
+      document.getElementById("skipStyledCodeTags").checked =
+        data.skipStyledCodeTags;
+      document.getElementById("addNoTranslateToPre").checked =
+        data.addTranslateNo;
+      updateExcludedDomainsList(data.excludedDomains);
+    },
+  );
 }
 
 function updateExcludedDomainsList() {
