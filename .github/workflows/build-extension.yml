@@ -3,11 +3,11 @@ name: Build Chrome Extension
 on:
   push:
     branches:
-      - main # `main` ブランチにプッシュ時に実行
+      - main
   pull_request:
     branches:
       - main
-  workflow_dispatch: # 手動実行
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
             code-dog.png code-dog-large.png
 
       - name: アーティファクトとして保存
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # ✅ v4 に更新
         with:
           name: chrome-extension
           path: dist/chrome-extension.zip
