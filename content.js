@@ -4,25 +4,20 @@ var skipStyledCodeTags = false; // skipStyledCodeTagsの初期化
 var addTranslateNo = false; //  addTranslateNo の設定値で初期化
 var excludedDomains = []; // ドメインの除外リストを初期化
 
-// 設定から除外タグを取得
 chrome.storage.sync.get(
-  { excludedTags: { a: false, div: false, pre: true, span: false } },
+  {
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    skipStyledCodeTags: false,
+    addTranslateNo: false,
+    excludedDomains: [],
+  },
   function (data) {
     excludedTags = data.excludedTags;
+    skipStyledCodeTags = data.skipStyledCodeTags;
+    addTranslateNo = data.addTranslateNo;
+    excludedDomains = data.excludedDomains;
   },
 );
-// 設定から skipStyledCodeTags の値を取得
-chrome.storage.sync.get({ skipStyledCodeTags: false }, function (data) {
-  skipStyledCodeTags = data.skipStyledCodeTags;
-});
-// addTranslateNo の設定値を取得
-chrome.storage.sync.get({ addTranslateNo: false }, function (data) {
-  addTranslateNo = data.addTranslateNo;
-});
-// 設定から除外ドメインを取得
-chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
-  excludedDomains = data.excludedDomains;
-});
 
 // 設定の変更を検知
 chrome.storage.onChanged.addListener((changes, areaName) => {
