@@ -204,8 +204,6 @@ chrome.runtime.onMessage.addListener((request) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("[CodeToSpan] Received message:", message);
-
   if (message.action === "checkSettings") {
     const settings = {
       enabled: codeToSpanEnable,
@@ -215,7 +213,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       excludedDomains,
     };
 
-    console.log("[CodeToSpan] Sending current settings:", settings);
     sendResponse(settings);
   }
 });
