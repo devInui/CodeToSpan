@@ -1,0 +1,35 @@
+name: Build Chrome Extension
+
+on:
+  push:
+    branches:
+      - main # `main` ブランチにプッシュ時に実行
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # 手動実行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v3
+
+      - name: Chrome拡張機能をZIPに圧縮
+        run: |
+          mkdir -p dist
+          zip -r dist/chrome-extension.zip \
+            _locales \
+            content.js \
+            manifest.json \
+            options.css options.html options.js \
+            popup.css popup.html popup.js \
+            code-dog.png code-dog-large.png
+
+      - name: アーティファクトとして保存
+        uses: actions/upload-artifact@v3
+        with:
+          name: chrome-extension
+          path: dist/chrome-extension.zip
