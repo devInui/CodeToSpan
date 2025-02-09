@@ -41,7 +41,7 @@ h1 {
   left: 4px;
   bottom: 4px;
   background-color: #888;
-  border: 1px;
+  border: 1px solid #ccc;
   transition: 0.4s;
   border-radius: 50%;
 }

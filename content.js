@@ -77,9 +77,8 @@ function processCodeTag(node) {
     newElem.appendChild(node.firstChild);
   }
   Array.from(node.attributes).forEach((attr) => {
-    if (attr.name !== "class" || !attr.value.includes("notranslate")) {
-      newElem.setAttribute(attr.name, attr.value);
-    }
+    if (attr.name === "class" && attr.value.includes("notranslate")) return;
+    newElem.setAttribute(attr.name, attr.value);
   });
   newElem.style.cssText = styleCssText;
   newElem.classList.add("processed-code-tag-by-CodeToSpan");
@@ -125,18 +124,18 @@ function replaceCodeTagsForNode(node) {
   const isAlreadyProcessed = node.classList.contains(
     "processed-code-tag-by-CodeToSpan",
   );
-  if (
-    !isAlreadyProcessed &&
-    shouldReplace(displayStyle) &&
-    !excludedTags[parent.tagName.toLowerCase()]
-  ) {
+  const parentTag = parent.tagName.toLowerCase();
+
+  if (excludedTags[parentTag] || !shouldReplace(displayStyle)) return;
+
+  if (!isAlreadyProcessed) {
     const { originalClone, newElem } = processCodeTag(node);
 
     parent.insertBefore(originalClone, node);
     parent.replaceChild(newElem, node);
     applyVisualStylesSafely(newElem, originalStyle);
   } else if (isAlreadyProcessed) {
-    // 一度処理されたコードタグが、JSで上書きされobserverで検出された場合の処理
+    // 処理済みコードタグが、上書きされ再検出された場合の処理
     const existingSpan = node.nextElementSibling;
     const spanStyle = { ...getComputedStyle(existingSpan) }; // getComputedStyleは参照であることに注意
     if (
@@ -195,28 +194,21 @@ let observer = chrome.storage.sync.get({ enabled: true }, ({ enabled }) => {
   }
 });
 
-// 拡張機能が有効・無効の切り替え時にページリロード
-chrome.runtime.onMessage.addListener((request) => {
-  if (request.command === "toggle") {
-    location.reload();
-  }
-  return Promise.resolve("done");
-});
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("[CodeToSpan] Received message:", message);
-
+  if (message.command === "toggle") {
+    // 拡張機能が有効・無効の切り替え時にページリロード
+    location.reload();
+    return;
+  }
   if (message.action === "checkSettings") {
-    const settings = {
+    // 設定の変更を検知
+    sendResponse({
       enabled: codeToSpanEnable,
       excludedTags,
       skipStyledCodeTags,
       addTranslateNo,
       excludedDomains,
-    };
-
-    console.log("[CodeToSpan] Sending current settings:", settings);
-    sendResponse(settings);
+    });
   }
 });
 

@@ -4,60 +4,52 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadSettings() {
-  loadExcludedTags();
-  loadSkipStyledCodeTags();
-  loadTranslateSettings();
-  updateExcludedDomainsList();
+  chrome.storage.sync.get(
+    {
+      excludedTags: {},
+      skipStyledCodeTags: false,
+      addTranslateNo: false,
+      excludedDomains: [],
+    },
+    function (data) {
+      document.getElementById("excludePre").checked =
+        !!data.excludedTags["pre"];
+      document.getElementById("excludeDiv").checked =
+        !!data.excludedTags["div"];
+      document.getElementById("excludeA").checked = !!data.excludedTags["a"];
+      document.getElementById("excludeSpan").checked =
+        !!data.excludedTags["span"];
+      document.getElementById("skipStyledCodeTags").checked =
+        data.skipStyledCodeTags;
+      document.getElementById("addNoTranslateToPre").checked =
+        data.addTranslateNo;
+      updateExcludedDomainsList(data.excludedDomains);
+    },
+  );
 }
 
-function loadExcludedTags() {
-  chrome.storage.sync.get({ excludedTags: {} }, function (data) {
-    document.getElementById("excludePre").checked = !!data.excludedTags["pre"];
-    document.getElementById("excludeDiv").checked = !!data.excludedTags["div"];
-    document.getElementById("excludeA").checked = !!data.excludedTags["a"];
-    document.getElementById("excludeSpan").checked =
-      !!data.excludedTags["span"];
-  });
-}
+function updateExcludedDomainsList(domains) {
+  var list = document.getElementById("excludedDomainsList");
+  list.innerHTML = "";
 
-function loadSkipStyledCodeTags() {
-  chrome.storage.sync.get({ skipStyledCodeTags: false }, function (data) {
-    document.getElementById("skipStyledCodeTags").checked =
-      data.skipStyledCodeTags;
-  });
-}
+  domains.forEach(function (domain) {
+    var li = document.createElement("li");
+    li.style.display = "flex";
+    li.style.justifyContent = "space-between";
+    li.style.alignItems = "center";
 
-function loadTranslateSettings() {
-  chrome.storage.sync.get({ addTranslateNo: false }, function (data) {
-    document.getElementById("addNoTranslateToPre").checked =
-      data.addTranslateNo;
-  });
-}
+    var domainSpan = document.createElement("span");
+    domainSpan.textContent = domain;
+    domainSpan.className = "domain-name";
 
-function updateExcludedDomainsList() {
-  chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
-    var list = document.getElementById("excludedDomainsList");
-    list.innerHTML = "";
+    var removeButton = document.createElement("button");
+    removeButton.textContent = "X";
+    removeButton.className = "removeDomain";
+    removeButton.setAttribute("data-domain", domain);
 
-    data.excludedDomains.forEach(function (domain) {
-      var li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.justifyContent = "space-between";
-      li.style.alignItems = "center";
-
-      var domainSpan = document.createElement("span");
-      domainSpan.textContent = domain;
-      domainSpan.className = "domain-name";
-
-      var removeButton = document.createElement("button");
-      removeButton.textContent = "X";
-      removeButton.className = "removeDomain";
-      removeButton.setAttribute("data-domain", domain);
-
-      li.appendChild(domainSpan);
-      li.appendChild(removeButton);
-      list.appendChild(li);
-    });
+    li.appendChild(domainSpan);
+    li.appendChild(removeButton);
+    list.appendChild(li);
   });
 }
 
