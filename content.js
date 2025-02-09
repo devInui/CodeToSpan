@@ -1,12 +1,16 @@
+var codeToSpanEnable = true; // 有効・無効を記録
 var excludedTags = []; // タグの除外リストを初期化
 var skipStyledCodeTags = false; // skipStyledCodeTagsの初期化
 var addTranslateNo = false; //  addTranslateNo の設定値で初期化
 var excludedDomains = []; // ドメインの除外リストを初期化
 
 // 設定から除外タグを取得
-chrome.storage.sync.get({ excludedTags: ["pre"] }, function (data) {
-  excludedTags = data.excludedTags;
-});
+chrome.storage.sync.get(
+  { excludedTags: { a: false, div: false, pre: true, span: false } },
+  function (data) {
+    excludedTags = data.excludedTags;
+  },
+);
 // 設定から skipStyledCodeTags の値を取得
 chrome.storage.sync.get({ skipStyledCodeTags: false }, function (data) {
   skipStyledCodeTags = data.skipStyledCodeTags;
@@ -190,6 +194,7 @@ function observeChanges() {
 
 // 拡張機能が有効の場合、変更を監視
 let observer = chrome.storage.sync.get({ enabled: true }, ({ enabled }) => {
+  codeToSpanEnable = enabled;
   if (enabled && !isDomainExcluded() && isLanguageDifferent()) {
     return observeChanges();
   }
@@ -203,13 +208,31 @@ chrome.runtime.onMessage.addListener((request) => {
   return Promise.resolve("done");
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("[CodeToSpan] Received message:", message);
+
+  if (message.action === "checkSettings") {
+    const settings = {
+      enabled: codeToSpanEnable,
+      excludedTags,
+      skipStyledCodeTags,
+      addTranslateNo,
+      excludedDomains,
+    };
+
+    console.log("[CodeToSpan] Sending current settings:", settings);
+    sendResponse(settings);
+  }
+});
+
 // 設定変更時のリロードを誘導
 function notifyUserToReload() {
   if (document.getElementById("reload-notification")) return;
 
   const notification = document.createElement("div");
   notification.id = "reload-notification";
-  notification.innerText = "設定が更新されました。リロードしてください。";
+  notification.innerText =
+    "[CodeToSpan] Settings updated. Please reload the page.";
   notification.style.position = "fixed";
   notification.style.bottom = "10px";
   notification.style.right = "10px";

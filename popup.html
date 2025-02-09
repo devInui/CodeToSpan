@@ -16,6 +16,14 @@
       </div>
       <!-- ステータス表示 -->
       <p><span id="stop">STOP/</span><span id="run">RUN</span></p>
+
+      <!-- 設定が古い場合の警告メッセージ -->
+      <div id="settings-warning" style="display: none; color: red">
+        <p><b>⚠ [CodeToSpan] Outdated Settings Detected</b></p>
+        <ul id="settings-diff"></ul>
+        <button id="reload-page">Reload</button>
+      </div>
+
       <!-- オプションページへのリンク -->
       <p><a href="#" id="openOptionsPage">Options</a></p>
     </div>
