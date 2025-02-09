@@ -28,30 +28,28 @@ function loadSettings() {
   );
 }
 
-function updateExcludedDomainsList() {
-  chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
-    var list = document.getElementById("excludedDomainsList");
-    list.innerHTML = "";
+function updateExcludedDomainsList(domains) {
+  var list = document.getElementById("excludedDomainsList");
+  list.innerHTML = "";
 
-    data.excludedDomains.forEach(function (domain) {
-      var li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.justifyContent = "space-between";
-      li.style.alignItems = "center";
+  domains.forEach(function (domain) {
+    var li = document.createElement("li");
+    li.style.display = "flex";
+    li.style.justifyContent = "space-between";
+    li.style.alignItems = "center";
 
-      var domainSpan = document.createElement("span");
-      domainSpan.textContent = domain;
-      domainSpan.className = "domain-name";
+    var domainSpan = document.createElement("span");
+    domainSpan.textContent = domain;
+    domainSpan.className = "domain-name";
 
-      var removeButton = document.createElement("button");
-      removeButton.textContent = "X";
-      removeButton.className = "removeDomain";
-      removeButton.setAttribute("data-domain", domain);
+    var removeButton = document.createElement("button");
+    removeButton.textContent = "X";
+    removeButton.className = "removeDomain";
+    removeButton.setAttribute("data-domain", domain);
 
-      li.appendChild(domainSpan);
-      li.appendChild(removeButton);
-      list.appendChild(li);
-    });
+    li.appendChild(domainSpan);
+    li.appendChild(removeButton);
+    list.appendChild(li);
   });
 }
 
