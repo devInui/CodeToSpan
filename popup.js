@@ -1,12 +1,35 @@
 // ボタンがクリックされたときに実行される関数
 function toggleExtension() {
   chrome.storage.sync.get({ enabled: true }, function (data) {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "[CodeToSpan] Failed to get storage:",
+        chrome.runtime.lastError,
+      );
+      return;
+    }
+
     const newEnabledState = !data.enabled;
 
     chrome.storage.sync.set({ enabled: newEnabledState }, function () {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "[CodeToSpan] Failed to set storage:",
+          chrome.runtime.lastError,
+        );
+        return;
+      }
+
       updateToggleButtonState(newEnabledState);
 
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "[CodeToSpan] Failed to query tabs:",
+            chrome.runtime.lastError,
+          );
+          return;
+        }
         if (tabs.length > 0) {
           chrome.tabs.sendMessage(tabs[0].id, {
             command: "toggle",

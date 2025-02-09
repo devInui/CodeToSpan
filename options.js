@@ -69,7 +69,15 @@ function initializeEventListeners() {
     .addEventListener("change", saveTranslateSettings);
 
   document.getElementById("addDomain").addEventListener("click", addDomain);
-  document.addEventListener("click", removeDomain);
+
+  document
+    .getElementById("excludedDomainsList")
+    .addEventListener("click", function (e) {
+      if (e.target.classList.contains("removeDomain")) {
+        removeDomain(e);
+      }
+    });
+
   document
     .getElementById("newDomain")
     .addEventListener("keypress", enterKeyDomainAdd);

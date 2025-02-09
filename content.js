@@ -57,10 +57,12 @@ function isDomainExcluded() {
 
 // ブラウザの言語とページの言語が異なるか判定
 function isLanguageDifferent() {
-  const browserLang = navigator.language;
+  const browserLang = navigator.language.split("-")[0]; // `ja-JP` → `ja`
   let pageLang =
-    document.documentElement.lang ||
-    document.querySelector('meta[property="og:locale"]')?.content;
+    (document.documentElement.lang || "").split("-")[0] || // `ja-JP` → `ja`
+    (document.querySelector('meta[property="og:locale"]')?.content || "").split(
+      "_",
+    )[0]; // `ja_JP` → `ja`
 
   return browserLang !== pageLang;
 }
