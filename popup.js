@@ -2,25 +2,27 @@
 function toggleExtension() {
   chrome.storage.sync.get({ enabled: true }, function (data) {
     const newEnabledState = !data.enabled;
-    // 拡張機能の有効/無効の状態を切り替える
+
     chrome.storage.sync.set({ enabled: newEnabledState }, function () {
-      const toggleButton = document.getElementById("toggle");
-      toggleButton.checked = newEnabledState;
-      toggleButton.textContent = newEnabledState
-        ? "Disable Extension"
-        : "Enable Extension";
-      // テキストレイアウトの変更
-      switchLayoutText(toggleButton.checked);
-      // メッセージ送信
+      updateToggleButtonState(newEnabledState);
+
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        const id = tabs[0].id;
-        chrome.tabs.sendMessage(id, {
-          command: "toggle",
-          enabled: newEnabledState,
-        });
+        if (tabs.length > 0) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            command: "toggle",
+            enabled: newEnabledState,
+          });
+        }
       });
     });
   });
+}
+
+function updateToggleButtonState(enabled) {
+  const toggleButton = document.getElementById("toggle");
+  toggleButton.checked = enabled;
+  toggleButton.textContent = enabled ? "Disable Extension" : "Enable Extension";
+  switchLayoutText(enabled);
 }
 
 // 初期化処理
