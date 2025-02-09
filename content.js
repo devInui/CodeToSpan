@@ -20,6 +20,13 @@ chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
   excludedDomains = data.excludedDomains;
 });
 
+// 設定の変更を検知
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "sync") {
+    notifyUserToReload();
+  }
+});
+
 // <pre> タグに翻訳除外属性を追加
 function addTranslateNoToPreTags(node) {
   if (addTranslateNo) {
@@ -195,3 +202,27 @@ chrome.runtime.onMessage.addListener((request) => {
   }
   return Promise.resolve("done");
 });
+
+// 設定変更時のリロードを誘導
+function notifyUserToReload() {
+  if (document.getElementById("reload-notification")) return;
+
+  const notification = document.createElement("div");
+  notification.id = "reload-notification";
+  notification.innerText = "設定が更新されました。リロードしてください。";
+  notification.style.position = "fixed";
+  notification.style.bottom = "10px";
+  notification.style.right = "10px";
+  notification.style.backgroundColor = "red";
+  notification.style.color = "white";
+  notification.style.padding = "10px";
+  notification.style.borderRadius = "5px";
+  notification.style.zIndex = "9999";
+  notification.style.cursor = "pointer";
+
+  notification.onclick = () => {
+    location.reload();
+  };
+
+  document.body.appendChild(notification);
+}
