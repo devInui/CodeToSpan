@@ -97,7 +97,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       );
 
       if (chrome.runtime.lastError) {
-        console.error(
+        console.warn(
           "[CodeToSpan] Error sending message:",
           chrome.runtime.lastError,
         );
@@ -105,21 +105,30 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       }
 
       if (!response) {
-        console.error(
+        console.warn(
           "[CodeToSpan] Error: No response received from content script.",
         );
         return;
       }
-      chrome.storage.sync.get(null, (latestSettings) => {
-        console.log("[CodeToSpan] Latest storage settings:", latestSettings);
+      chrome.storage.sync.get(
+        {
+          enabled: true,
+          excludedTags: { a: false, div: false, pre: true, span: false },
+          skipStyledCodeTags: false,
+          addTranslateNo: false,
+          excludedDomains: [],
+        },
+        (latestSettings) => {
+          console.log("[CodeToSpan] Latest storage settings:", latestSettings);
 
-        let differences = getSettingDifferences(response, latestSettings);
+          let differences = getSettingDifferences(response, latestSettings);
 
-        if (differences.length > 0) {
-          console.log("[CodeToSpan] Detected differences:", differences);
-          displaySettingWarning(differences);
-        }
-      });
+          if (differences.length > 0) {
+            console.log("[CodeToSpan] Detected differences:", differences);
+            displaySettingWarning(differences);
+          }
+        },
+      );
     },
   );
 });
@@ -160,7 +169,6 @@ function getSettingDifferences(current, latest) {
     diffs.push("Excluded Domains list changed");
   }
 
-  console.log("[CodeToSpan] Comparison results:", diffs);
   return diffs;
 }
 
@@ -188,6 +196,12 @@ function displaySettingWarning(differences) {
   const reloadButton = document.getElementById("reload-page");
 
   diffList.innerHTML = "";
+
+  if (differences.length === 0) {
+    // 変更点がない場合は警告を非表示にする
+    warningDiv.classList.remove("visible");
+    return;
+  }
 
   // カテゴリ分類
   const categories = {
@@ -220,7 +234,9 @@ function displaySettingWarning(differences) {
       if (foundCategory === "Extension was") {
         // RUN → STOP 形式に変更
         const wasEnabled = diff.includes("enabled");
-        categorizedChanges[foundCategory].push(`RUN → STOP`);
+        categorizedChanges[foundCategory].push(
+          wasEnabled ? "RUN → STOP" : "STOP → RUN",
+        );
       } else if (foundCategory === "Exclude Tags changed") {
         // `Exclude Tags changed` の場合、タグごとに改行
         let tagChanges = diff.replace(foundCategory + ": ", "").split(", ");

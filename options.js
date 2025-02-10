@@ -6,9 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function loadSettings() {
   chrome.storage.sync.get(
     {
-      excludedTags: {},
+      excludedTags: { a: false, div: false, pre: true, span: false },
       skipStyledCodeTags: false,
-      addTranslateNo: false,
+      addTranslateNo: true,
       excludedDomains: [],
     },
     function (data) {
