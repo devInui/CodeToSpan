@@ -97,7 +97,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       );
 
       if (chrome.runtime.lastError) {
-        console.warn(
+        console.log(
           "[CodeToSpan] Error sending message:",
           chrome.runtime.lastError,
         );
@@ -105,7 +105,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       }
 
       if (!response) {
-        console.warn(
+        console.log(
           "[CodeToSpan] Error: No response received from content script.",
         );
         return;

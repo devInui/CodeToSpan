@@ -160,3 +160,26 @@ function enterKeyDomainAdd(e) {
     addDomain();
   }
 }
+
+document.getElementById("resetSettings").addEventListener("click", function () {
+  if (
+    !confirm(
+      "Are you sure you want to reset settings? This will not affect the excluded domains.",
+    )
+  ) {
+    return;
+  }
+
+  // デフォルト設定を定義
+  const defaultSettings = {
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+  };
+
+  // 設定をリセット
+  chrome.storage.sync.set(defaultSettings, function () {
+    console.log("Settings reset to default (excluding domains).");
+    loadSettings(); // UIを更新
+  });
+});

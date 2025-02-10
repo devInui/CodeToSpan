@@ -127,3 +127,24 @@ h2 {
   margin-bottom: 15px;
   border-radius: 5px;
 }
+
+#resetSettings {
+  background-color: #4ba5f0; /* 爽やかな水色 */
+  color: white; /* 文字色を白に */
+  border: none;
+  padding: 8px 12px; /* クリックしやすいサイズ */
+  border-radius: 5px; /* 角丸で統一感 */
+  font-weight: bold; /* 強調 */
+  cursor: pointer; /* クリック感を出す */
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#resetSettings:hover {
+  background-color: #3a8ed0; /* ホバー時に少し濃い青 */
+  transform: scale(1.05); /* 軽く拡大してクリック感を演出 */
+}
+
+#resetSettings:active {
+  background-color: #2c7bb8; /* 押したときはさらに濃い青 */
+  transform: scale(0.98); /* 押し込む感じ */
+}
