@@ -130,7 +130,7 @@ function addDomain() {
     domains.push(newDomain);
     chrome.storage.sync.set(
       { excludedDomains: domains },
-      updateExcludedDomainsList,
+      updateExcludedDomainsList(domains),
     );
   });
 }
@@ -146,7 +146,7 @@ function removeDomain(e) {
         domains.splice(index, 1);
         chrome.storage.sync.set(
           { excludedDomains: domains },
-          updateExcludedDomainsList,
+          updateExcludedDomainsList(domains),
         );
       }
     });

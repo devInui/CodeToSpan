@@ -80,6 +80,7 @@ function switchLayoutText(toggleState) {
 document
   .getElementById("openOptionsPage")
   .addEventListener("click", function () {
+    event.preventDefault();
     chrome.runtime.openOptionsPage();
   });
 
