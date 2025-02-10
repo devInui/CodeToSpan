@@ -19,13 +19,6 @@ chrome.storage.sync.get(
   },
 );
 
-// 設定の変更を検知
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "sync") {
-    notifyUserToReload();
-  }
-});
-
 // <pre> タグに翻訳除外属性を追加
 function addTranslateNoToPreTags(node) {
   if (addTranslateNo) {
@@ -213,28 +206,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
   }
 });
-
-// 設定変更時のリロードを誘導
-function notifyUserToReload() {
-  if (document.getElementById("reload-notification")) return;
-
-  const notification = document.createElement("div");
-  notification.id = "reload-notification";
-  notification.innerText =
-    "[CodeToSpan] Settings updated. Please reload the page.";
-  notification.style.position = "fixed";
-  notification.style.bottom = "10px";
-  notification.style.right = "10px";
-  notification.style.backgroundColor = "#4ba5f0";
-  notification.style.color = "white";
-  notification.style.padding = "10px";
-  notification.style.borderRadius = "5px";
-  notification.style.zIndex = "9999";
-  notification.style.cursor = "pointer";
-
-  notification.onclick = () => {
-    location.reload();
-  };
-
-  document.body.appendChild(notification);
-}
