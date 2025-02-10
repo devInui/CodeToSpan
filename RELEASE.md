@@ -1,5 +1,17 @@
 # CodeToSpan Release Notes
 
+## CodeToSpan 2.3 - Release Date: upcoming
+
+### New Features
+
+- Improved clarity on the necessity of reloading each tab after changing settings.
+- Added a page notification system that detects outdated settings in open tabs, allowing users to view a list of changes.
+- Introduced a Reset Settings button in the Options page, making it easier to revert settings to their defaults (excluding domain exclusions).
+
+### Bug Fixes
+
+- Fixed an issue where the default settings in the Options page were not being applied correctly.
+
 ## CodeToSpan 2.2 - Release Date: 2023/12/05
 
 ### New Features
