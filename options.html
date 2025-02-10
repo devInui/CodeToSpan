@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>CodeToSpan Options</title>
     <link rel="stylesheet" href="options.css" />
   </head>
@@ -70,11 +71,14 @@
       <p class="description">
         Add domains to exclude from this extension's processing. Recommended for
         sites that generate <code>&lt;code&gt;</code> tags automatically, such
-        as AI-based generators.<br />
+        as generative AI.<br />
         This extension is active, you can view the current page's domain in the
         developer console.
       </p>
-      <p class="description"></p>
+      <p class="warning-message">
+        ⚠ You need to reload each tab to apply the changes after modifying the
+        settings.
+      </p>
     </form>
     <script src="options.js"></script>
   </body>

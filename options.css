@@ -116,6 +116,14 @@ h2 {
 }
 
 .description {
-  font-size: 0.9em;
+  font-size: 14px;
   color: #666;
+}
+/* 注意書きのスタイル */
+.warning-message {
+  font-size: 14px;
+  color: #d9534f;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
 }

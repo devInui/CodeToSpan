@@ -127,32 +127,40 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 function getSettingDifferences(current, latest) {
   let diffs = [];
 
-  if (current.enable !== latest.enable) {
-    diffs.push("enabled have changed.");
+  if (current.enabled !== latest.enabled) {
+    diffs.push(`Extension was ${latest.enabled ? "enabled" : "disabled"}`);
   }
   if (
-    JSON.stringify(current.excludedTags) !==
-    JSON.stringify(
-      latest.excludedTags || { a: false, div: false, pre: true, span: false },
-    )
+    JSON.stringify(current.excludedTags) !== JSON.stringify(latest.excludedTags)
   ) {
-    diffs.push("Excluded Tags have changed.");
+    const changes = [];
+    for (const tag in latest.excludedTags) {
+      if (current.excludedTags[tag] !== latest.excludedTags[tag]) {
+        changes.push(
+          `${tag}: ${current.excludedTags[tag]} → ${latest.excludedTags[tag]}`,
+        );
+      }
+    }
+    diffs.push(`Exclude Tags changed: ${changes.join(", ")}`);
   }
-  if (current.skipStyledCodeTags !== (latest.skipStyledCodeTags || false)) {
-    diffs.push("Skip Styled Code Tags setting has changed.");
+  if (current.skipStyledCodeTags !== latest.skipStyledCodeTags) {
+    diffs.push(
+      `Skip Styled Code Tags: ${current.skipStyledCodeTags} → ${latest.skipStyledCodeTags}`,
+    );
   }
-  if (current.addTranslateNo !== latest.addTranslateNo || false) {
-    diffs.push("Add translate='no' setting has changed.");
+  if (current.addTranslateNo !== latest.addTranslateNo) {
+    diffs.push(
+      `Add translate="no" setting: ${current.addTranslateNo} → ${latest.addTranslateNo}`,
+    );
   }
   if (
     JSON.stringify(current.excludedDomains) !==
-    JSON.stringify(latest.excludedDomains || [])
+    JSON.stringify(latest.excludedDomains)
   ) {
-    diffs.push("Excluded Domains list has changed.");
+    diffs.push("Excluded Domains list changed");
   }
 
   console.log("[CodeToSpan] Comparison results:", diffs);
-
   return diffs;
 }
 
@@ -173,4 +181,84 @@ function displaySettingWarning(differences) {
   reloadButton.onclick = () => {
     chrome.tabs.reload();
   };
+}
+function displaySettingWarning(differences) {
+  const warningDiv = document.getElementById("settings-warning");
+  const diffList = document.getElementById("settings-diff");
+  const reloadButton = document.getElementById("reload-page");
+
+  diffList.innerHTML = "";
+
+  // カテゴリ分類
+  const categories = {
+    "Extension was": "🛠️ Extension Status",
+    "Exclude Tags changed": "🏷️ Excluded Tags",
+    "Skip Styled Code Tags": "🎨 Skip Styled Code",
+    'Add translate="no" setting': "🌍 Translate Attribute",
+    "Excluded Domains list changed": "🌐 Excluded Domains",
+  };
+
+  let categorizedChanges = {};
+
+  // 各変更をカテゴリごとに整理
+  differences.forEach((diff) => {
+    let foundCategory = null;
+
+    // カテゴリのキーに部分一致するものを検索
+    for (const key in categories) {
+      if (diff.startsWith(key)) {
+        foundCategory = key;
+        break;
+      }
+    }
+
+    if (foundCategory) {
+      if (!categorizedChanges[foundCategory]) {
+        categorizedChanges[foundCategory] = [];
+      }
+
+      if (foundCategory === "Extension was") {
+        // RUN → STOP 形式に変更
+        const wasEnabled = diff.includes("enabled");
+        categorizedChanges[foundCategory].push(`RUN → STOP`);
+      } else if (foundCategory === "Exclude Tags changed") {
+        // `Exclude Tags changed` の場合、タグごとに改行
+        let tagChanges = diff.replace(foundCategory + ": ", "").split(", ");
+        tagChanges.forEach((tagChange) => {
+          categorizedChanges[foundCategory].push(tagChange);
+        });
+      } else {
+        categorizedChanges[foundCategory].push(
+          diff.replace(foundCategory + ": ", ""),
+        );
+      }
+    } else {
+      // 該当しないものは "Other" カテゴリに
+      if (!categorizedChanges["Other"]) {
+        categorizedChanges["Other"] = [];
+      }
+      categorizedChanges["Other"].push(diff);
+    }
+  });
+
+  // カテゴリごとにリスト表示
+  for (const category in categorizedChanges) {
+    let categoryTitle = document.createElement("div");
+    categoryTitle.classList.add("settings-category");
+    categoryTitle.textContent = categories[category] || category;
+    diffList.appendChild(categoryTitle);
+
+    categorizedChanges[category].forEach((change) => {
+      let li = document.createElement("li");
+      li.textContent = change;
+      diffList.appendChild(li);
+    });
+  }
+
+  // メッセージの表示制御
+  if (differences.length > 0) {
+    warningDiv.classList.add("visible");
+  } else {
+    warningDiv.classList.remove("visible");
+  }
 }
