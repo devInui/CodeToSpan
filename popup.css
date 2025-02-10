@@ -1,8 +1,10 @@
 .container {
+  width: 280px; /* ポップアップ幅を少し広げる */
+  min-height: 150px;
+  height: auto; /* 設定変更メッセージに応じて自動調整 */
   text-align: center;
   background-color: #f5f5f5;
 }
-
 h1 {
   color: #444444;
   font-family: Arial, sans-serif;
@@ -29,7 +31,7 @@ h1 {
   bottom: 0;
   background-color: #d1d1d1;
   transition: 0.4s;
-  border-radius: 17px;
+  border-radius: 50px;
   cursor: pointer;
 }
 
@@ -41,7 +43,6 @@ h1 {
   left: 4px;
   bottom: 4px;
   background-color: #888;
-  border: 1px solid #ccc;
   transition: 0.4s;
   border-radius: 50%;
 }
@@ -65,4 +66,59 @@ p {
   font-size: 14px;
   color: #555;
   margin-block-start: 0.5em;
+}
+
+/* 設定変更メッセージのスタイル */
+#settings-warning {
+  font-size: 12px;
+  max-width: 100%;
+  padding: 10px;
+  background-color: #fff3cd;
+  border-left: 5px solid #ff6f61;
+  color: #333;
+  margin-top: 10px;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  border-radius: 5px;
+  text-align: left;
+}
+
+#settings-warning.visible {
+  visibility: visible;
+  height: auto;
+}
+
+#settings-diff {
+  padding: 5px 10px;
+  margin: 0;
+}
+
+#settings-diff li {
+  font-size: 12px;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+/* アイコン付き表示 */
+#settings-diff li::before {
+  content: "⚡"; /* 強調アイコン */
+  margin-right: 5px;
+  color: #d9534f;
+}
+
+/* カテゴリタイトル */
+.settings-category {
+  font-weight: bold;
+  margin-top: 10px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #d9534f;
+  display: inline-block;
+}
+
+#reload-page {
+  padding: 5px 10px;
+  font-size: 12px;
 }

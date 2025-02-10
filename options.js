@@ -30,7 +30,9 @@ function loadSettings() {
 
 function updateExcludedDomainsList(domains) {
   var list = document.getElementById("excludedDomainsList");
-  list.innerHTML = "";
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
 
   domains.forEach(function (domain) {
     var li = document.createElement("li");
@@ -67,7 +69,15 @@ function initializeEventListeners() {
     .addEventListener("change", saveTranslateSettings);
 
   document.getElementById("addDomain").addEventListener("click", addDomain);
-  document.addEventListener("click", removeDomain);
+
+  document
+    .getElementById("excludedDomainsList")
+    .addEventListener("click", function (e) {
+      if (e.target.classList.contains("removeDomain")) {
+        removeDomain(e);
+      }
+    });
+
   document
     .getElementById("newDomain")
     .addEventListener("keypress", enterKeyDomainAdd);
@@ -120,7 +130,7 @@ function addDomain() {
     domains.push(newDomain);
     chrome.storage.sync.set(
       { excludedDomains: domains },
-      updateExcludedDomainsList,
+      updateExcludedDomainsList(domains),
     );
   });
 }
@@ -136,7 +146,7 @@ function removeDomain(e) {
         domains.splice(index, 1);
         chrome.storage.sync.set(
           { excludedDomains: domains },
-          updateExcludedDomainsList,
+          updateExcludedDomainsList(domains),
         );
       }
     });

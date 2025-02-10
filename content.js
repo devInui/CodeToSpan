@@ -57,10 +57,12 @@ function isDomainExcluded() {
 
 // ブラウザの言語とページの言語が異なるか判定
 function isLanguageDifferent() {
-  const browserLang = navigator.language;
+  const browserLang = navigator.language.split("-")[0]; // `ja-JP` → `ja`
   let pageLang =
-    document.documentElement.lang ||
-    document.querySelector('meta[property="og:locale"]')?.content;
+    (document.documentElement.lang || "").split("-")[0] || // `ja-JP` → `ja`
+    (document.querySelector('meta[property="og:locale"]')?.content || "").split(
+      "_",
+    )[0]; // `ja_JP` → `ja`
 
   return browserLang !== pageLang;
 }
@@ -223,7 +225,7 @@ function notifyUserToReload() {
   notification.style.position = "fixed";
   notification.style.bottom = "10px";
   notification.style.right = "10px";
-  notification.style.backgroundColor = "red";
+  notification.style.backgroundColor = "#4ba5f0";
   notification.style.color = "white";
   notification.style.padding = "10px";
   notification.style.borderRadius = "5px";

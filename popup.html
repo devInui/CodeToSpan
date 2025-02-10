@@ -8,7 +8,7 @@
   <body>
     <div class="container">
       <!-- ヘッダー -->
-      <h1>CodeToSpan<br />for<br />Translation</h1>
+      <h1>CodeToSpan<br />for Translation</h1>
       <!-- トグルスイッチ -->
       <div class="toggle">
         <input type="checkbox" id="toggle" />
@@ -18,14 +18,15 @@
       <p><span id="stop">STOP/</span><span id="run">RUN</span></p>
 
       <!-- 設定が古い場合の警告メッセージ -->
-      <div id="settings-warning" style="display: none; color: red">
-        <p><b>⚠ [CodeToSpan] Outdated Settings Detected</b></p>
+      <div id="settings-warning">
+        <p><b>⚠ Outdated Settings Detected.</b></p>
+        <p>Please reload this page.</p>
         <ul id="settings-diff"></ul>
         <button id="reload-page">Reload</button>
       </div>
 
       <!-- オプションページへのリンク -->
-      <p><a href="event.preventDefault();" id="openOptionsPage">Options</a></p>
+      <p><a href="#" id="openOptionsPage">Options</a></p>
     </div>
     <script src="popup.js"></script>
   </body>
