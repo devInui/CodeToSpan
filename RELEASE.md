@@ -7,10 +7,15 @@
 - Improved clarity on the necessity of reloading each tab after changing settings.
 - Added a page notification system that detects outdated settings in open tabs, allowing users to view a list of changes.
 - Introduced a Reset Settings button in the Options page, making it easier to revert settings to their defaults (excluding domain exclusions).
+- We have added multilingual support for Japanese on the Options page.
 
 ### Bug Fixes
 
 - Fixed an issue where the default settings in the Options page were not being applied correctly.
+
+### Other
+
+- Performed some refactoring
 
 ## CodeToSpan 2.2 - Release Date: 2023/12/05
 
