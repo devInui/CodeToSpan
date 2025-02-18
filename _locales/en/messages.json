@@ -1,5 +1,80 @@
 {
   "Description": {
     "message": "Corrects translation errors in programming docs by replacing code tags with span tags, enhancing readability."
+  },
+  "OptionsTitle": {
+    "message": "CodeToSpan Options"
+  },
+  "ExcludeTagsTitle": {
+    "message": "Exclude in Parent Tags:"
+  },
+  "ExcludeTagsDescription": {
+    "message": "Select parent tags where code elements will not be converted"
+  },
+  "InPreTag": {
+    "message": "In <pre>"
+  },
+  "InDivTag": {
+    "message": "In <div>"
+  },
+  "InATag": {
+    "message": "In <a>"
+  },
+  "InSpanTag": {
+    "message": "In <span>"
+  },
+  "LanguageControlTitle": {
+    "message": "Language-Based Control"
+  },
+  "LanguageControlDescription": {
+    "message": "When enabled, the extension will only apply modifications if the page's language differs from your browser's language."
+  },
+  "EnableLanguageDetection": {
+    "message": "Enable language detection"
+  },
+  "SkipStyledCodeTitle": {
+    "message": "Skip Styled Code Tags:"
+  },
+  "SkipStyledCodeDescription": {
+    "message": "Skip conversion for code tags with specific styles"
+  },
+  "BlockStyleElements": {
+    "message": "Block and Inline-Block style elements"
+  },
+  "TranslateNoTitle": {
+    "message": "Add translate=\"no\" into"
+  },
+  "TranslateNoDescription": {
+    "message": "Automatically add a \"no translate\" attribute to <pre> tags to prevent translation of code blocks."
+  },
+  "AddToPreTags": {
+    "message": "<pre>"
+  },
+  "ExcludeDomainsTitle": {
+    "message": "Exclude Domains"
+  },
+  "ExcludeDomainsDescription": {
+    "message": "Add domains to exclude from this extension's processing. Recommended for sites that generate code tags automatically, ex. generative-AI sites."
+  },
+  "AddDomainPlaceholder": {
+    "message": "Enter domain to exclude"
+  },
+  "AddDomainButton": {
+    "message": "Add"
+  },
+  "ResetSettingsButton": {
+    "message": "Reset Settings"
+  },
+  "ResetConfirmMessage": {
+    "message": "Are you sure you want to reset settings? This will not affect the excluded domains."
+  },
+  "DomainExistsMessage": {
+    "message": "This domain already exists."
+  },
+  "EnterDomainMessage": {
+    "message": "Please enter a domain name."
+  },
+  "ReloadWarning": {
+    "message": "⚠ You need to reload each tab to apply the changes after modifying the settings."
   }
 }

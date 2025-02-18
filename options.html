@@ -2,84 +2,95 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>CodeToSpan Options</title>
+    <title data-i18n="OptionsTitle"></title>
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
-    <h1>CodeToSpan Options</h1>
+    <h1 data-i18n="OptionsTitle"></h1>
     <form id="optionsForm">
-      <h2>Exclude Tags:</h2>
+      <h2 data-i18n="ExcludeTagsTitle"></h2>
       <div class="options-container">
         <div class="checkbox-label">
           <input type="checkbox" id="excludePre" name="excludePre" />
-          <label for="excludePre"><code>&lt;pre&gt;</code></label>
+          <label for="excludePre" data-i18n="InPreTag"></label>
         </div>
         <div class="checkbox-label">
           <input type="checkbox" id="excludeDiv" name="excludeDiv" />
-          <label for="excludeDiv"><code>&lt;div&gt;</code></label>
+          <label for="excludeDiv" data-i18n="InDivTag"></label>
         </div>
         <div class="checkbox-label">
           <input type="checkbox" id="excludeA" name="excludeA" />
-          <label for="excludeA"><code>&lt;a&gt;</code></label>
+          <label for="excludeA" data-i18n="InATag"></label>
         </div>
         <div class="checkbox-label">
           <input type="checkbox" id="excludeSpan" name="excludeSpan" />
-          <label for="excludeSpan"><code>&lt;span&gt;</code></label>
+          <label for="excludeSpan" data-i18n="InSpanTag"></label>
         </div>
       </div>
-      <p class="description">
-        Select tags where <code>&lt;code&gt;</code> elements will not be
-        converted to <code>&lt;span&gt;</code> tags.
-      </p>
+      <p class="description" data-i18n-description="ExcludeTagsDescription"></p>
 
-      <h2>Skip Styled Code Tags</h2>
+      <h2 data-i18n="LanguageControlTitle"></h2>
+      <div class="checkbox-label">
+        <input type="checkbox" id="isLanguageCheckEnabled" />
+        <label
+          for="isLanguageCheckEnabled"
+          data-i18n="EnableLanguageDetection"
+        ></label>
+      </div>
+      <p
+        class="description"
+        data-i18n-description="LanguageControlDescription"
+      ></p>
+
+      <h2 data-i18n="SkipStyledCodeTitle"></h2>
       <div class="checkbox-label">
         <label>
-          <input type="checkbox" id="skipStyledCodeTags" /> block and
-          inline-block elements
+          <input type="checkbox" id="skipStyledCodeTags" />
+          <span data-i18n="BlockStyleElements"></span>
         </label>
       </div>
-      <p class="description">
-        Skips replacing <code>&lt;code&gt;</code> tags styled as block elements
-        to prevent layout disruptions due to changes in text width from
-        translations.
-      </p>
+      <p
+        class="description"
+        data-i18n-description="SkipStyledCodeDescription"
+      ></p>
 
-      <h2>Add translate="no" to</h2>
+      <h2 data-i18n="TranslateNoTitle"></h2>
       <div class="checkbox-label">
-        <label
-          ><input type="checkbox" id="addNoTranslateToPre" />
-          <code>&lt;pre&gt;</code></label
-        >
+        <label>
+          <input type="checkbox" id="addNoTranslateToPre" />
+          <span data-i18n="AddToPreTags"></span>
+        </label>
       </div>
-      <p class="description">
-        Automatically add a "no translate" attribute to
-        <code>&lt;pre&gt;</code> tags to prevent translation of code blocks
-        without code tags.
-      </p>
-      <h2><button id="resetSettings" type="button">Reset Settings</button></h2>
+      <p class="description" data-i18n-description="TranslateNoDescription"></p>
 
-      <h2>Exclude Domains</h2>
+      <h2>
+        <button
+          id="resetSettings"
+          type="button"
+          data-i18n="ResetSettingsButton"
+        ></button>
+      </h2>
+
+      <h2 data-i18n="ExcludeDomainsTitle"></h2>
       <div class="options-container">
         <div id="domainListContainer">
           <ul id="excludedDomainsList"></ul>
         </div>
         <div id="domainInputContainer">
-          <input type="text" id="newDomain" placeholder="Enter new domain..." />
-          <button id="addDomain">Add</button>
+          <input
+            type="text"
+            id="newDomain"
+            placeholder=""
+            data-i18n-placeholder="AddDomainPlaceholder"
+          />
+          <button id="addDomain" data-i18n="AddDomainButton"></button>
         </div>
       </div>
-      <p class="description">
-        Add domains to exclude from this extension's processing. Recommended for
-        sites that generate <code>&lt;code&gt;</code> tags automatically, such
-        as generative AI.<br />
-        This extension is active, you can view the current page's domain in the
-        developer console.
-      </p>
-      <p class="warning-message">
-        ⚠ You need to reload each tab to apply the changes after modifying the
-        settings.
-      </p>
+      <p
+        class="description"
+        data-i18n-description="ExcludeDomainsDescription"
+      ></p>
+      <p class="warning-message" data-i18n="ReloadWarning"></p>
     </form>
     <script src="options.js"></script>
   </body>

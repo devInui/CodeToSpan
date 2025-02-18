@@ -1,5 +1,80 @@
 {
   "Description": {
-    "message": "プログラムのドキュメントをページ翻訳したとき、うまく翻訳できなかった経験はありませんか？この拡張機能は、テキスト内のコードタグによる翻訳の歪みをspanタグに置き換えることで、その問題を解決します。"
+    "message": "プログラミングドキュメントの翻訳を改善します。codeタグをspanタグに置換することで、より正確な翻訳を実現します。"
+  },
+  "OptionsTitle": {
+    "message": "CodeToSpan Options"
+  },
+  "ExcludeTagsTitle": {
+    "message": "Exclude in Parent Tags:"
+  },
+  "ExcludeTagsDescription": {
+    "message": "変換から除外する親タグを選択"
+  },
+  "InPreTag": {
+    "message": "In <pre>"
+  },
+  "InDivTag": {
+    "message": "In <div>"
+  },
+  "InATag": {
+    "message": "In <a>"
+  },
+  "InSpanTag": {
+    "message": "In <span>"
+  },
+  "LanguageControlTitle": {
+    "message": "Language-Based Control"
+  },
+  "LanguageControlDescription": {
+    "message": "ページの言語がブラウザと異なる場合のみ変換を適用"
+  },
+  "EnableLanguageDetection": {
+    "message": "言語検出を有効化"
+  },
+  "SkipStyledCodeTitle": {
+    "message": "Skip Styled Code Tags"
+  },
+  "SkipStyledCodeDescription": {
+    "message": "特定のスタイルが適用されたcodeタグを変換から除外"
+  },
+  "BlockStyleElements": {
+    "message": "Block and Inline-Block style elements"
+  },
+  "TranslateNoTitle": {
+    "message": "Add translate=\"no\" into"
+  },
+  "TranslateNoDescription": {
+    "message": "コードブロックの翻訳を防ぐため、preタグにtranslate=\"no\"属性を追加します。"
+  },
+  "AddToPreTags": {
+    "message": "<pre>"
+  },
+  "ExcludeDomainsTitle": {
+    "message": "Exclude Domains"
+  },
+  "ExcludeDomainsDescription": {
+    "message": "変換から除外するドメインを追加します。AI生成サイトなどの<code>タグを生成するサイトの追加を推奨します。"
+  },
+  "AddDomainPlaceholder": {
+    "message": "除外するドメインを入力"
+  },
+  "AddDomainButton": {
+    "message": "Add"
+  },
+  "ResetSettingsButton": {
+    "message": "Reset Settings"
+  },
+  "ResetConfirmMessage": {
+    "message": "設定をリセットしますか？（除外ドメインは保持されます）"
+  },
+  "DomainExistsMessage": {
+    "message": "既に登録済みです"
+  },
+  "EnterDomainMessage": {
+    "message": "ドメインを入力してください"
+  },
+  "ReloadWarning": {
+    "message": "⚠ 設定の反映には各タブにて再読み込みが必要です"
   }
 }

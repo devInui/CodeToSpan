@@ -114,6 +114,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         {
           enabled: true,
           excludedTags: { a: false, div: false, pre: true, span: false },
+          isLanguageCheckEnabled: true,
           skipStyledCodeTags: false,
           addTranslateNo: false,
           excludedDomains: [],
@@ -146,20 +147,33 @@ function getSettingDifferences(current, latest) {
     for (const tag in latest.excludedTags) {
       if (current.excludedTags[tag] !== latest.excludedTags[tag]) {
         changes.push(
-          `${tag}: ${current.excludedTags[tag]} → ${latest.excludedTags[tag]}`,
+          `${tag}: ${current.excludedTags[tag] ? "ON" : "OFF"} → ${
+            latest.excludedTags[tag] ? "ON" : "OFF"
+          }`,
         );
       }
     }
     diffs.push(`Exclude Tags changed: ${changes.join(", ")}`);
   }
+  if (current.isLanguageCheckEnabled !== latest.isLanguageCheckEnabled) {
+    diffs.push(
+      `Language-Based Control: ${
+        current.isLanguageCheckEnabled ? "ON" : "OFF"
+      } → ${latest.isLanguageCheckEnabled ? "ON" : "OFF"}`,
+    );
+  }
   if (current.skipStyledCodeTags !== latest.skipStyledCodeTags) {
     diffs.push(
-      `Skip Styled Code Tags: ${current.skipStyledCodeTags} → ${latest.skipStyledCodeTags}`,
+      `Skip Styled Code Tags: ${current.skipStyledCodeTags ? "ON" : "OFF"} → ${
+        latest.skipStyledCodeTags ? "ON" : "OFF"
+      }`,
     );
   }
   if (current.addTranslateNo !== latest.addTranslateNo) {
     diffs.push(
-      `Add translate="no" setting: ${current.addTranslateNo} → ${latest.addTranslateNo}`,
+      `Add translate="no" setting: ${current.addTranslateNo ? "ON" : "OFF"} → ${
+        latest.addTranslateNo ? "ON" : "OFF"
+      }`,
     );
   }
   if (
@@ -178,24 +192,6 @@ function displaySettingWarning(differences) {
   const reloadButton = document.getElementById("reload-page");
 
   diffList.innerHTML = "";
-  differences.forEach((diff) => {
-    let li = document.createElement("li");
-    li.textContent = diff;
-    diffList.appendChild(li);
-  });
-
-  warningDiv.style.display = "block";
-
-  reloadButton.onclick = () => {
-    chrome.tabs.reload();
-  };
-}
-function displaySettingWarning(differences) {
-  const warningDiv = document.getElementById("settings-warning");
-  const diffList = document.getElementById("settings-diff");
-  const reloadButton = document.getElementById("reload-page");
-
-  diffList.innerHTML = "";
 
   if (differences.length === 0) {
     // 変更点がない場合は警告を非表示にする
@@ -206,10 +202,15 @@ function displaySettingWarning(differences) {
   // カテゴリ分類
   const categories = {
     "Extension was": "🛠️ Extension Status",
-    "Exclude Tags changed": "🏷️ Excluded Tags",
-    "Skip Styled Code Tags": "🎨 Skip Styled Code",
-    'Add translate="no" setting': "🌍 Translate Attribute",
-    "Excluded Domains list changed": "🌐 Excluded Domains",
+    "Exclude Tags changed": "🏷️ " + chrome.i18n.getMessage("ExcludeTagsTitle"),
+    "Language-Based Control":
+      "🈵 " + chrome.i18n.getMessage("LanguageControlTitle"),
+    "Skip Styled Code Tags":
+      "🎨 " + chrome.i18n.getMessage("SkipStyledCodeTitle"),
+    'Add translate="no" setting':
+      "🌍 " + chrome.i18n.getMessage("TranslateNoTitle"),
+    "Excluded Domains list changed":
+      "🌐 " + chrome.i18n.getMessage("ExcludeDomainsTitle"),
   };
 
   let categorizedChanges = {};
@@ -232,10 +233,9 @@ function displaySettingWarning(differences) {
       }
 
       if (foundCategory === "Extension was") {
-        // RUN → STOP 形式に変更
         const wasEnabled = diff.includes("enabled");
         categorizedChanges[foundCategory].push(
-          wasEnabled ? "RUN → STOP" : "STOP → RUN",
+          wasEnabled ? "OFF → ON" : "ON → OFF",
         );
       } else if (foundCategory === "Exclude Tags changed") {
         // `Exclude Tags changed` の場合、タグごとに改行
@@ -278,3 +278,13 @@ function displaySettingWarning(differences) {
     warningDiv.classList.remove("visible");
   }
 }
+
+// Reloadボタンのクリックイベントリスナー
+document.getElementById("reload-page").addEventListener("click", function () {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (tabs.length > 0) {
+      chrome.tabs.reload(tabs[0].id);
+      window.close(); // ポップアップを閉じる
+    }
+  });
+});
