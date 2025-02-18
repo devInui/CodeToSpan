@@ -114,6 +114,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         {
           enabled: true,
           excludedTags: { a: false, div: false, pre: true, span: false },
+          isLanguageCheckEnabled: true,
           skipStyledCodeTags: false,
           addTranslateNo: false,
           excludedDomains: [],
@@ -152,6 +153,11 @@ function getSettingDifferences(current, latest) {
     }
     diffs.push(`Exclude Tags changed: ${changes.join(", ")}`);
   }
+  if (current.isLanguageCheckEnabled !== latest.isLanguageCheckEnabled) {
+    diffs.push(
+      `Language-Based Control: ${current.isLanguageCheckEnabled} → ${latest.isLanguageCheckEnabled}`,
+    );
+  }
   if (current.skipStyledCodeTags !== latest.skipStyledCodeTags) {
     diffs.push(
       `Skip Styled Code Tags: ${current.skipStyledCodeTags} → ${latest.skipStyledCodeTags}`,
@@ -178,24 +184,6 @@ function displaySettingWarning(differences) {
   const reloadButton = document.getElementById("reload-page");
 
   diffList.innerHTML = "";
-  differences.forEach((diff) => {
-    let li = document.createElement("li");
-    li.textContent = diff;
-    diffList.appendChild(li);
-  });
-
-  warningDiv.style.display = "block";
-
-  reloadButton.onclick = () => {
-    chrome.tabs.reload();
-  };
-}
-function displaySettingWarning(differences) {
-  const warningDiv = document.getElementById("settings-warning");
-  const diffList = document.getElementById("settings-diff");
-  const reloadButton = document.getElementById("reload-page");
-
-  diffList.innerHTML = "";
 
   if (differences.length === 0) {
     // 変更点がない場合は警告を非表示にする
@@ -207,6 +195,7 @@ function displaySettingWarning(differences) {
   const categories = {
     "Extension was": "🛠️ Extension Status",
     "Exclude Tags changed": "🏷️ Excluded Tags",
+    "Language-Based Control": "🈵 Language Control",
     "Skip Styled Code Tags": "🎨 Skip Styled Code",
     'Add translate="no" setting': "🌍 Translate Attribute",
     "Excluded Domains list changed": "🌐 Excluded Domains",
@@ -277,4 +266,9 @@ function displaySettingWarning(differences) {
   } else {
     warningDiv.classList.remove("visible");
   }
+  reloadButton.onclick = () => {
+    chrome.tabs.reload(() => {
+      chrome.tabs.reload();
+    });
+  };
 }
