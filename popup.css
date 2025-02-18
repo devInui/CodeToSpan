@@ -118,7 +118,31 @@ p {
   display: inline-block;
 }
 
+/* ボタンのコンテナを中央揃え */
+#reload-container {
+  display: flex;
+  justify-content: center; /* 🔹 ボタンを中央配置 */
+  margin-top: 10px;
+}
+
+/* ボタンのデザイン */
 #reload-page {
-  padding: 5px 10px;
-  font-size: 12px;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #4ba5f0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#reload-page:hover {
+  background-color: #3a8ed0;
+}
+
+#reload-page:active {
+  background-color: #2c7bb8;
+  transform: scale(0.98);
 }

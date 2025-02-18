@@ -7,12 +7,14 @@ var excludedDomains = []; // ドメインの除外リストを初期化
 chrome.storage.sync.get(
   {
     excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
     addTranslateNo: false,
     excludedDomains: [],
   },
   function (data) {
     excludedTags = data.excludedTags;
+    isLanguageCheckEnabled = data.isLanguageCheckEnabled;
     skipStyledCodeTags = data.skipStyledCodeTags;
     addTranslateNo = data.addTranslateNo;
     excludedDomains = data.excludedDomains;
@@ -181,10 +183,17 @@ function observeChanges() {
   return observer;
 }
 
+// 設定に基づいて動作を決定
+function shouldApplyExtension() {
+  if (isDomainExcluded()) return false;
+  if (!isLanguageCheckEnabled) return true;
+
+  return isLanguageDifferent();
+}
 // 拡張機能が有効の場合、変更を監視
-let observer = chrome.storage.sync.get({ enabled: true }, ({ enabled }) => {
+chrome.storage.sync.get({ enabled: true }, ({ enabled }) => {
   codeToSpanEnable = enabled;
-  if (enabled && !isDomainExcluded() && isLanguageDifferent()) {
+  if (enabled && shouldApplyExtension()) {
     return observeChanges();
   }
 });
@@ -200,6 +209,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({
       enabled: codeToSpanEnable,
       excludedTags,
+      isLanguageCheckEnabled,
       skipStyledCodeTags,
       addTranslateNo,
       excludedDomains,

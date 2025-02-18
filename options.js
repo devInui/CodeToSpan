@@ -7,6 +7,7 @@ function loadSettings() {
   chrome.storage.sync.get(
     {
       excludedTags: { a: false, div: false, pre: true, span: false },
+      isLanguageCheckEnabled: true,
       skipStyledCodeTags: false,
       addTranslateNo: true,
       excludedDomains: [],
@@ -19,6 +20,8 @@ function loadSettings() {
       document.getElementById("excludeA").checked = !!data.excludedTags["a"];
       document.getElementById("excludeSpan").checked =
         !!data.excludedTags["span"];
+      document.getElementById("isLanguageCheckEnabled").checked =
+        data.isLanguageCheckEnabled;
       document.getElementById("skipStyledCodeTags").checked =
         data.skipStyledCodeTags;
       document.getElementById("addNoTranslateToPre").checked =
@@ -61,6 +64,10 @@ function initializeEventListeners() {
   });
 
   document
+    .getElementById("isLanguageCheckEnabled")
+    .addEventListener("change", saveLanguageCheckSetting);
+
+  document
     .getElementById("skipStyledCodeTags")
     .addEventListener("change", saveSkipStyledCodeTags);
 
@@ -92,6 +99,13 @@ function saveExcludedTags() {
   };
   chrome.storage.sync.set({ excludedTags: excludedTags }, function () {
     console.log("Excluded tags settings saved");
+  });
+}
+
+function saveLanguageCheckSetting() {
+  var isEnabled = document.getElementById("isLanguageCheckEnabled").checked;
+  chrome.storage.sync.set({ isLanguageCheckEnabled: isEnabled }, function () {
+    console.log("Language check setting saved:", isEnabled);
   });
 }
 
@@ -173,6 +187,7 @@ document.getElementById("resetSettings").addEventListener("click", function () {
   // デフォルト設定を定義
   const defaultSettings = {
     excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
     addTranslateNo: true,
   };
