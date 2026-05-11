@@ -1,3 +1,8 @@
 /archiveFiles/
 *.zip
 .vscode
+
+# Local AI coordination and investigation notes
+AGENTS.md
+docs/multi-agent/
+v2.3-repair-project-summary.html
