@@ -22,6 +22,13 @@ async function runContentScripts({
   let observeCalls = 0;
   let reloadCalls = 0;
 
+  const location = {
+    hostname: "example.com",
+    reload() {
+      reloadCalls += 1;
+    },
+  };
+
   const context = {
     console: {
       log() {},
@@ -32,14 +39,18 @@ async function runContentScripts({
     },
     window: {
       addEventListener() {},
+      location,
     },
-    location: {
-      reload() {
-        reloadCalls += 1;
-      },
-    },
+    location,
     navigator: {
       language: browserLanguage,
+    },
+    MutationObserver: class {
+      observe() {
+        observeCalls += 1;
+      }
+
+      disconnect() {}
     },
     document: {
       documentElement: {

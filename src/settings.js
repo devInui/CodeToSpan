@@ -1,5 +1,6 @@
 // CodeToSpan拡張機能の設定初期値
 const CODETOSPAN_DEFAULT_SETTINGS = {
+  enabled: true,
   excludedTags: { a: false, div: false, pre: true, span: false },
   isLanguageCheckEnabled: true,
   skipStyledCodeTags: false,
