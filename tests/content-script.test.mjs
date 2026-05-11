@@ -154,6 +154,6 @@ test("keeps the popup checkSettings action contract", async () => {
   });
   assert.equal(responses[0].isLanguageCheckEnabled, true);
   assert.equal(responses[0].skipStyledCodeTags, false);
-  assert.equal(responses[0].addTranslateNo, false);
+  assert.equal(responses[0].addTranslateNo, true);
   assert.deepEqual(responses[0].excludedDomains, []);
 });

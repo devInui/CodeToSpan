@@ -125,7 +125,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           excludedTags: { a: false, div: false, pre: true, span: false },
           isLanguageCheckEnabled: true,
           skipStyledCodeTags: false,
-          addTranslateNo: false,
+          addTranslateNo: true,
           excludedDomains: [],
         },
         (latestSettings) => {

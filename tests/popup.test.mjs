@@ -138,7 +138,7 @@ test("shows outdated-settings warning when current tab settings differ from late
     excludedTags: { a: false, div: false, pre: true, span: false },
     isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
-    addTranslateNo: false,
+    addTranslateNo: true,
     excludedDomains: [],
   };
   const currentSettings = {
@@ -168,7 +168,7 @@ test("does not show outdated-settings warning when content script reports settin
     excludedTags: { a: false, div: false, pre: true, span: false },
     isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
-    addTranslateNo: false,
+    addTranslateNo: true,
     excludedDomains: [],
   };
 

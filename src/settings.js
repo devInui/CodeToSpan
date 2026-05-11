@@ -4,7 +4,7 @@ const CODETOSPAN_DEFAULT_SETTINGS = {
   excludedTags: { a: false, div: false, pre: true, span: false },
   isLanguageCheckEnabled: true,
   skipStyledCodeTags: false,
-  addTranslateNo: false,
+  addTranslateNo: true,
   excludedDomains: [],
 };
 
