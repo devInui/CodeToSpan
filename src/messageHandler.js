@@ -70,6 +70,3 @@ function setupCodeToSpanErrorHandler() {
 }
 
 // 初期化
-initializeCodeToSpan();
-setupCodeToSpanMessageHandlers();
-setupCodeToSpanErrorHandler();
