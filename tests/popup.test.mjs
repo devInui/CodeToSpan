@@ -161,3 +161,39 @@ test("shows outdated-settings warning when current tab settings differ from late
   assert.match(diffList.children[1].textContent, /^OFF/);
   assert.match(diffList.children[1].textContent, /ON$/);
 });
+
+test("does not show outdated-settings warning when content script reports settings failure", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: false,
+    excludedDomains: [],
+  };
+
+  const { elements, sentCheckSettingsRequest } = await runPopup({
+    currentSettings: { success: false, error: "Settings not initialized" },
+    latestSettings,
+  });
+
+  const warning = elements.get("settings-warning");
+  const diffList = elements.get("settings-diff");
+
+  assert.equal(sentCheckSettingsRequest, true);
+  assert.equal(warning.classList.contains("visible"), false);
+  assert.equal(diffList.children.length, 0);
+});
+
+test("does not show outdated-settings warning when content script sends no response", async () => {
+  const { elements, sentCheckSettingsRequest } = await runPopup({
+    currentSettings: undefined,
+  });
+
+  const warning = elements.get("settings-warning");
+  const diffList = elements.get("settings-diff");
+
+  assert.equal(sentCheckSettingsRequest, true);
+  assert.equal(warning.classList.contains("visible"), false);
+  assert.equal(diffList.children.length, 0);
+});

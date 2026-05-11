@@ -110,6 +110,15 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         );
         return;
       }
+
+      if (response.success === false) {
+        console.log(
+          "[CodeToSpan] Content script could not provide settings:",
+          response.error,
+        );
+        return;
+      }
+
       chrome.storage.sync.get(
         {
           enabled: true,
