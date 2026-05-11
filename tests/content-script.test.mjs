@@ -97,7 +97,9 @@ async function runContentScripts({
   function sendMessage(message) {
     const responses = [];
     for (const listener of listeners) {
-      listener(message, {}, (response) => responses.push(response));
+      listener(message, {}, (response) =>
+        responses.push(structuredClone(response)),
+      );
     }
     return responses;
   }
@@ -134,4 +136,24 @@ test("accepts the popup toggle message contract", async () => {
 
   assert.equal(runtime.reloadCalls, 1);
   assert.deepEqual(responses, [{ success: true }]);
+});
+
+test("keeps the popup checkSettings action contract", async () => {
+  const runtime = await runContentScripts();
+
+  const responses = runtime.sendMessage({ action: "checkSettings" });
+
+  assert.equal(responses.length, 1);
+  assert.equal(responses[0].success, true);
+  assert.equal(responses[0].enabled, true);
+  assert.deepEqual(responses[0].excludedTags, {
+    a: false,
+    div: false,
+    pre: true,
+    span: false,
+  });
+  assert.equal(responses[0].isLanguageCheckEnabled, true);
+  assert.equal(responses[0].skipStyledCodeTags, false);
+  assert.equal(responses[0].addTranslateNo, false);
+  assert.deepEqual(responses[0].excludedDomains, []);
 });

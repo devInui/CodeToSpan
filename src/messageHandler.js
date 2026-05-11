@@ -18,20 +18,22 @@ function initializeCodeToSpan() {
 // CodeToSpanメッセージハンドラーの設定
 function setupCodeToSpanMessageHandlers() {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "toggle") {
+    const messageAction = message.action || message.command;
+
+    if (messageAction === "toggle") {
       handleExtensionToggle();
       sendResponse({ success: true });
       return false;
     }
 
-    if (message.action === "checkSettings") {
+    if (messageAction === "checkSettings") {
       handleSettingsCheck((response) => {
         sendResponse(response);
       });
       return true; // 非同期レスポンスのために必要
     }
 
-    console.warn("[CodeToSpan] Unknown message action:", message.action);
+    console.warn("[CodeToSpan] Unknown message action:", messageAction);
     sendResponse({ success: false, error: "Unknown action" });
     return false;
   });
