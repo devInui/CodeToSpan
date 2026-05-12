@@ -59,11 +59,16 @@ async function runPopup({
   latestSettings,
   initialStorage = { enabled: true },
   initialLocalStorage = { popupShowMoreExpanded: false },
+  activeTabUrl = "https://example.com/article",
+  confirmReload = false,
   sendMessageLastError = null,
 } = {}) {
   const html = await readFile(path.join(rootDir, "popup.html"), "utf8");
   const elements = new Map();
   let sentCheckSettingsRequest = false;
+  const confirmMessages = [];
+  const reloadedTabs = [];
+  let syncValues = { ...latestSettings };
 
   for (const [, id] of html.matchAll(/\bid="([^"]+)"/g)) {
     elements.set(id, new TestElement(id));
@@ -104,16 +109,22 @@ async function runPopup({
             const values =
               Object.keys(defaults).length === 1 && "enabled" in defaults
                 ? { ...defaults, ...initialStorage }
-                : { ...defaults, ...latestSettings };
+                : { ...defaults, ...syncValues };
             callback(values);
+          },
+          set(values, callback) {
+            syncValues = { ...syncValues, ...values };
+            callback?.();
           },
         },
       },
       tabs: {
         query(_queryInfo, callback) {
-          callback([{ id: 123 }]);
+          callback([{ id: 123, url: activeTabUrl }]);
         },
-        reload() {},
+        reload(tabId) {
+          reloadedTabs.push(tabId);
+        },
         sendMessage(tabId, message, callback) {
           assert.equal(tabId, 123);
           assert.deepEqual(Object.keys(message), ["action"]);
@@ -129,10 +140,15 @@ async function runPopup({
       error() {},
       log() {},
     },
+    confirm(message) {
+      confirmMessages.push(message);
+      return confirmReload;
+    },
     document,
     event: {
       preventDefault() {},
     },
+    URL,
     window: {
       close() {},
     },
@@ -142,7 +158,7 @@ async function runPopup({
   const popupCode = await readFile(path.join(rootDir, "popup.js"), "utf8");
   vm.runInContext(popupCode, context, { filename: "popup.js" });
 
-  return { elements, sentCheckSettingsRequest };
+  return { confirmMessages, elements, reloadedTabs, sentCheckSettingsRequest };
 }
 
 test("shows outdated-settings warning when current tab settings differ from latest storage settings", async () => {
@@ -280,4 +296,105 @@ test("show more state is restored and persisted with local storage", async () =>
 
   assert.equal(moreActions.classList.contains("visible"), false);
   assert.equal(showMoreLabel.textContent, "Show More");
+});
+
+test("check domain shows the active tab hostname with add action", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { elements } = await runPopup({
+    currentSettings: latestSettings,
+    latestSettings,
+    activeTabUrl: "https://docs.example.co.jp/path",
+  });
+
+  elements.get("check-domain").listeners.click();
+
+  assert.equal(elements.get("domain-check").classList.contains("visible"), true);
+  assert.equal(
+    elements.get("domain-check").classList.contains("unavailable"),
+    false,
+  );
+  assert.equal(elements.get("current-domain").textContent, "docs.example.co.jp");
+  assert.equal(elements.get("add-current-domain").textContent, "Add");
+  assert.equal(elements.get("add-current-domain").disabled, false);
+});
+
+test("check domain marks an already excluded hostname as added", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: ["docs.example.co.jp"],
+  };
+
+  const { elements } = await runPopup({
+    currentSettings: latestSettings,
+    latestSettings,
+    activeTabUrl: "https://docs.example.co.jp/path",
+  });
+
+  elements.get("check-domain").listeners.click();
+
+  assert.equal(elements.get("current-domain").textContent, "docs.example.co.jp");
+  assert.equal(elements.get("add-current-domain").textContent, "Added");
+  assert.equal(elements.get("add-current-domain").disabled, true);
+});
+
+test("add domain stores the active hostname and reloads after confirmation", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { confirmMessages, elements, reloadedTabs } = await runPopup({
+    currentSettings: latestSettings,
+    latestSettings,
+    activeTabUrl: "https://docs.example.co.jp/path",
+    confirmReload: true,
+  });
+
+  elements.get("check-domain").listeners.click();
+  elements.get("add-current-domain").listeners.click();
+
+  assert.equal(elements.get("add-current-domain").textContent, "Added");
+  assert.equal(elements.get("add-current-domain").disabled, true);
+  assert.deepEqual(confirmMessages, ["Domain added. Reload current tab?"]);
+  assert.deepEqual(reloadedTabs, [123]);
+});
+
+test("check domain shows unavailable state when the tab has no hostname", async () => {
+  const { elements } = await runPopup({
+    currentSettings: undefined,
+    latestSettings: {
+      excludedTags: { a: false, div: false, pre: true, span: false },
+      isLanguageCheckEnabled: true,
+      skipStyledCodeTags: false,
+      addTranslateNo: true,
+      excludedDomains: [],
+    },
+    activeTabUrl: "chrome://extensions/",
+  });
+
+  elements.get("check-domain").listeners.click();
+
+  assert.equal(elements.get("domain-check").classList.contains("visible"), true);
+  assert.equal(
+    elements.get("domain-check").classList.contains("unavailable"),
+    true,
+  );
+  assert.equal(elements.get("current-domain").textContent, "Domain unavailable");
+  assert.equal(elements.get("add-current-domain").disabled, true);
 });

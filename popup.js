@@ -112,6 +112,105 @@ document
     chrome.runtime.openOptionsPage();
   });
 
+let currentDomainForAdd = "";
+
+function getActiveTab(callback) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError || tabs.length === 0) {
+      callback(null);
+      return;
+    }
+    callback(tabs[0]);
+  });
+}
+
+function getHostnameFromTab(tab) {
+  if (!tab || !tab.url) return "";
+
+  try {
+    const url = new URL(tab.url);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return "";
+    }
+    return url.hostname;
+  } catch (_error) {
+    return "";
+  }
+}
+
+function showDomainUnavailable() {
+  currentDomainForAdd = "";
+  const domainCheck = document.getElementById("domain-check");
+  const currentDomain = document.getElementById("current-domain");
+  const addButton = document.getElementById("add-current-domain");
+
+  domainCheck.classList.add("visible", "unavailable");
+  currentDomain.textContent = "Domain unavailable";
+  addButton.disabled = true;
+  addButton.textContent = "Add";
+}
+
+function showDomainCheck(hostname, domains) {
+  currentDomainForAdd = hostname;
+  const domainCheck = document.getElementById("domain-check");
+  const currentDomain = document.getElementById("current-domain");
+  const addButton = document.getElementById("add-current-domain");
+  const isAdded = domains.includes(hostname);
+
+  domainCheck.classList.add("visible");
+  domainCheck.classList.remove("unavailable");
+  currentDomain.textContent = hostname;
+  addButton.disabled = isAdded;
+  addButton.textContent = isAdded ? "Added" : "Add";
+}
+
+function checkCurrentDomain() {
+  getActiveTab(function (tab) {
+    const hostname = getHostnameFromTab(tab);
+    if (!hostname) {
+      showDomainUnavailable();
+      return;
+    }
+
+    chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
+      showDomainCheck(hostname, data.excludedDomains);
+    });
+  });
+}
+
+function addCurrentDomain() {
+  if (!currentDomainForAdd) return;
+
+  chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
+    const domains = data.excludedDomains;
+    if (domains.includes(currentDomainForAdd)) {
+      showDomainCheck(currentDomainForAdd, domains);
+      return;
+    }
+
+    const updatedDomains = domains.concat(currentDomainForAdd);
+    chrome.storage.sync.set({ excludedDomains: updatedDomains }, function () {
+      showDomainCheck(currentDomainForAdd, updatedDomains);
+      if (confirm("Domain added. Reload current tab?")) {
+        getActiveTab(function (tab) {
+          if (tab) {
+            chrome.tabs.reload(tab.id);
+            window.close();
+          }
+        });
+      }
+    });
+  });
+}
+
+document
+  .getElementById("check-domain")
+  .addEventListener("click", checkCurrentDomain);
+
+document
+  .getElementById("add-current-domain")
+  .addEventListener("click", addCurrentDomain);
+
 // 設定の変更を検知
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   if (tabs.length === 0) return;

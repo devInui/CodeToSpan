@@ -227,6 +227,10 @@ input:checked + .slider::before {
   width: 100%;
 }
 
+#check-domain {
+  width: 100%;
+}
+
 .more-actions {
   display: none;
   margin-top: 12px;
@@ -235,6 +239,93 @@ input:checked + .slider::before {
 .more-actions.visible {
   display: grid;
   gap: 8px;
+}
+
+.domain-check {
+  display: none;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.domain-check.visible {
+  display: grid;
+}
+
+.domain-check.unavailable {
+  grid-template-columns: 1fr;
+  padding: 9px 10px;
+  border: 1px solid #ffd589;
+  border-left: 4px solid var(--warn-line);
+  border-radius: 7px;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.domain-check.unavailable .domain-add-button {
+  display: none;
+}
+
+.domain-value {
+  min-width: 0;
+  min-height: 32px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  white-space: nowrap;
+  border: 1px solid #b7c6d8;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.domain-value::-webkit-scrollbar {
+  display: none;
+}
+
+.domain-add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  min-height: 32px;
+  border: 1px solid var(--primary);
+  border-radius: 7px;
+  background: var(--primary);
+  color: #fff;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.domain-add-button:hover {
+  border-color: var(--primary-dark);
+  background: var(--primary-dark);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+.domain-add-button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.domain-add-button:disabled {
+  border-color: #cfd8e3;
+  background: #eef2f6;
+  color: var(--muted);
+  cursor: default;
+  box-shadow: none;
 }
 
 .show-more-toggle {
