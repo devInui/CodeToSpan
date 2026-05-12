@@ -267,3 +267,58 @@ test("active default settings stay aligned across settings, popup, and options",
     ),
   );
 });
+
+test("excluded domain rows render remove button before domain text", async () => {
+  const elements = new Map([
+    ["excludedDomainsList", new TestElement("excludedDomainsList", "ul")],
+    ["resetSettings", new TestElement("resetSettings", "button")],
+  ]);
+  const context = {
+    chrome: {
+      i18n: {
+        getMessage(key) {
+          return key;
+        },
+      },
+      storage: {
+        sync: {
+          get() {},
+          set() {},
+        },
+      },
+    },
+    console: {
+      log() {},
+    },
+    document: {
+      addEventListener() {},
+      createElement(tagName) {
+        return new TestElement("", tagName);
+      },
+      getElementById(id) {
+        return elements.get(id) ?? null;
+      },
+      querySelector(selector) {
+        if (selector === "h1") {
+          return new TestElement("", "h1");
+        }
+        return null;
+      },
+      querySelectorAll() {
+        return [];
+      },
+      title: "",
+    },
+  };
+
+  vm.createContext(context);
+  const code = await readFile(path.join(rootDir, "options.js"), "utf8");
+  vm.runInContext(code, context, { filename: "options.js" });
+
+  context.updateExcludedDomainsList(["example.com"]);
+
+  const [row] = elements.get("excludedDomainsList").children;
+  assert.equal(row.children[0].className, "removeDomain");
+  assert.equal(row.children[1].className, "domain-name");
+  assert.equal(row.children[1].textContent, "example.com");
+});

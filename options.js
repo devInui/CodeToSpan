@@ -82,8 +82,8 @@ function updateExcludedDomainsList(domains) {
     removeButton.className = "removeDomain";
     removeButton.setAttribute("data-domain", domain);
 
-    li.appendChild(domainSpan);
     li.appendChild(removeButton);
+    li.appendChild(domainSpan);
     list.appendChild(li);
   });
 }
