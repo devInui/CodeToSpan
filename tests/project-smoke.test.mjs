@@ -29,3 +29,14 @@ test("locale files are valid Chrome i18n message JSON", async () => {
     }
   }
 });
+
+test("Japanese locale messages do not contain mojibake markers", async () => {
+  const messages = JSON.parse(
+    await readFile(path.join(rootDir, "_locales", "ja", "messages.json"), "utf8"),
+  );
+  const mojibakePattern = /[\u0080-\u009f\ue000-\uf8ff\ufffd]|(?:縺|繧|譁|螟|蜿|險|笞)/u;
+
+  for (const [key, value] of Object.entries(messages)) {
+    assert.doesNotMatch(value.message, mojibakePattern, `ja.${key}`);
+  }
+});
