@@ -6,16 +6,18 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <div class="container">
+    <main class="container">
       <!-- ヘッダー -->
       <h1>CodeToSpan<br />for Translation</h1>
       <!-- トグルスイッチ -->
-      <div class="toggle">
-        <input type="checkbox" id="toggle" />
-        <label for="toggle" class="slider"></label>
+      <div class="toggle-row">
+        <span id="stop" class="toggle-label">STOP</span>
+        <div class="toggle">
+          <input type="checkbox" id="toggle" />
+          <label for="toggle" class="slider"></label>
+        </div>
+        <span id="run" class="toggle-label">RUN</span>
       </div>
-      <!-- ステータス表示 -->
-      <p><span id="stop">STOP/</span><span id="run">RUN</span></p>
 
       <!-- 設定が古い場合の警告メッセージ -->
       <div id="settings-warning">
@@ -26,8 +28,8 @@
       </div>
 
       <!-- オプションページへのリンク -->
-      <p><a href="#" id="openOptionsPage">Options</a></p>
-    </div>
+      <a href="#" id="openOptionsPage" class="popup-button">Options</a>
+    </main>
     <script src="popup.js"></script>
   </body>
 </html>
