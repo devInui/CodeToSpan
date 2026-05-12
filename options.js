@@ -70,7 +70,7 @@ function updateExcludedDomainsList(domains) {
   domains.forEach(function (domain) {
     var li = document.createElement("li");
     li.style.display = "flex";
-    li.style.justifyContent = "space-between";
+    li.style.justifyContent = "flex-start";
     li.style.alignItems = "center";
 
     var domainSpan = document.createElement("span");

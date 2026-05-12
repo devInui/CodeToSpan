@@ -1,150 +1,306 @@
-/* Adjust the label and checkbox alignment */
-.checkbox-label {
-  display: flex;
-  align-items: center; /* Aligns items vertically in the center */
-  margin-bottom: 8px; /* Adds some space below each checkbox-label pair */
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --line: #d8e0ea;
+  --text: #1f2937;
+  --muted: #667085;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --danger: #dc2626;
+  --critical-bg: #fff1f1;
+  --critical-line: #dc2626;
+  --critical-text: #8f1d1d;
+  color-scheme: light;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-/* Style for the checkbox */
-.checkbox-label input[type="checkbox"] {
-  margin-right: 10px; /* Adds space between the checkbox and the label text */
+* {
+  box-sizing: border-box;
 }
 
-/* Style for the label */
-.checkbox-label label {
-  font-size: 16px; /* Adjust font-size as needed for consistency */
-  color: #333; /* Set the text color for better readability */
-}
-
-/* Style for the container of checkboxes for overall alignment */
-.options-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* Space between each checkbox-label pair */
-}
-
-/* General styles */
 body {
-  font-family: Arial, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-h1,
-h2,
-p {
-  color: #333;
+.settings-shell {
+  width: min(1040px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+}
+
+.settings-header {
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: 0;
 }
 
 h2 {
-  margin-top: 30px;
+  margin: 0 0 10px;
+  font-size: 15px;
+  letter-spacing: 0;
 }
 
-/* Checkbox styles */
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+p {
+  margin: 0;
 }
 
-.checkbox-label input[type="checkbox"] {
-  margin-right: 5px;
+.settings-header p,
+.description,
+.setting-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
-.checkbox-label label {
-  font-size: 14px;
+.settings-grid {
+  display: grid;
+  gap: 14px;
 }
 
-/* Description text styles */
-.description {
-  font-size: 14px;
-  margin-top: 20px;
-  margin-bottom: 15px;
+.settings-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "page translate"
+    "code reset";
+  align-items: start;
+  gap: 14px;
+}
+
+.settings-section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.page-language {
+  grid-area: page;
+}
+
+.code-rules {
+  grid-area: code;
+}
+
+.translate-attributes {
+  grid-area: translate;
+}
+
+.reset-section {
+  grid-area: reset;
+}
+
+.domains-section {
+  grid-column: 1 / -1;
 }
 
 .options-container {
+  display: grid;
+  gap: 8px;
+}
+
+.checkbox-label {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  margin: 0;
+  border-radius: 7px;
+  padding: 3px 5px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.16s ease;
 }
 
-#domainListContainer {
-  margin-bottom: 10px;
+.checkbox-label:hover {
+  background: #f3f6fa;
 }
 
-#excludedDomainsList {
-  list-style-type: none;
-  padding: 0;
-}
-
-#excludedDomainsList li {
-  background-color: #f0f0f0;
-  margin: 5px 0;
-  padding: 5px;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-#excludedDomainsList li span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex-grow: 1;
-}
-
-#domainInputContainer {
-  display: flex;
-  gap: 10px;
-}
-
-#newDomain {
-  flex-grow: 1;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-#addDomain {
-  padding: 5px 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--primary);
   cursor: pointer;
 }
 
-#addDomain:hover {
-  background-color: #45a049;
+.checkbox-label:hover input[type="checkbox"] {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .description {
-  font-size: 14px;
-  color: #666;
+  margin-bottom: 8px;
 }
-/* 注意書きのスタイル */
+
+.setting-note {
+  margin: 4px 0 0 28px;
+}
+
+.reset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+#domainListContainer {
+  margin-bottom: 2px;
+}
+
+#excludedDomainsList {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#excludedDomainsList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  margin: 0;
+  padding: 0;
+}
+
+.domain-name {
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.domain-name::-webkit-scrollbar {
+  display: none;
+}
+
+.removeDomain {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border: 1px solid #f2b8b5;
+  border-radius: 7px;
+  background: #fff5f5;
+  color: var(--danger);
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.removeDomain:hover {
+  border-color: #ef8f8a;
+  background: #ffe8e8;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+#domainInputContainer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#newDomain {
+  min-width: 0;
+  height: 34px;
+  border: 1px solid #bfcbd9;
+  border-radius: 7px;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+#newDomain:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+button {
+  height: 34px;
+  border: 1px solid #b7c6d8;
+  border-radius: 7px;
+  background: #fff;
+  color: #344054;
+  padding: 0 11px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+button:hover {
+  border-color: #8fa3bd;
+  background: #f8fafc;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+#addDomain {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+#addDomain:hover {
+  background: var(--primary-dark);
+}
+
 .warning-message {
-  font-size: 14px;
-  color: #d9534f;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
+  border: 1px solid #f5b4b4;
+  border-left: 4px solid var(--critical-line);
+  border-radius: 8px;
+  background: var(--critical-bg);
+  color: var(--critical-text);
+  padding: 11px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
 }
 
-#resetSettings {
-  background-color: #4ba5f0; /* 爽やかな水色 */
-  color: white; /* 文字色を白に */
-  border: none;
-  padding: 8px 12px; /* クリックしやすいサイズ */
-  border-radius: 5px; /* 角丸で統一感 */
-  font-weight: bold; /* 強調 */
-  cursor: pointer; /* クリック感を出す */
-  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-}
+@media (max-width: 900px) {
+  .settings-shell {
+    width: min(100% - 24px, 1040px);
+    padding-top: 20px;
+  }
 
-#resetSettings:hover {
-  background-color: #3a8ed0; /* ホバー時に少し濃い青 */
-  transform: scale(1.05); /* 軽く拡大してクリック感を演出 */
-}
+  .settings-columns {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "page"
+      "code"
+      "translate"
+      "reset";
+  }
 
-#resetSettings:active {
-  background-color: #2c7bb8; /* 押したときはさらに濃い青 */
-  transform: scale(0.98); /* 押し込む感じ */
+  .reset-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  #resetSettings {
+    align-self: flex-start;
+  }
 }

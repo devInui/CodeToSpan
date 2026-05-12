@@ -5,6 +5,18 @@
   "OptionsTitle": {
     "message": "CodeToSpan Options"
   },
+  "OptionsLead": {
+    "message": "Settings are grouped by purpose, with domain actions placed on the left."
+  },
+  "PageLanguageTitle": {
+    "message": "Page Language"
+  },
+  "PageLanguageDescription": {
+    "message": "Compare the page language with your browser language and process pages that are likely to be translated."
+  },
+  "CodeElementRulesTitle": {
+    "message": "Code Element Rules"
+  },
   "ExcludeTagsTitle": {
     "message": "Exclude in Parent Tags:"
   },
@@ -38,14 +50,26 @@
   "SkipStyledCodeDescription": {
     "message": "Skip conversion for code tags with specific styles"
   },
+  "ProtectSizedCodeBlocks": {
+    "message": "Protect sized code blocks"
+  },
+  "ProtectSizedCodeDescription": {
+    "message": "Code elements with their own size are not converted."
+  },
   "BlockStyleElements": {
     "message": "Block and Inline-Block style elements"
   },
   "TranslateNoTitle": {
     "message": "Add translate=\"no\" into"
   },
+  "TranslateAttributesTitle": {
+    "message": "Translate Attributes"
+  },
   "TranslateNoDescription": {
-    "message": "Automatically add a \"no translate\" attribute to <pre> tags to prevent translation of code blocks."
+    "message": "Add attributes to elements that should be excluded from machine translation."
+  },
+  "AddTranslateNoToPre": {
+    "message": "Add translate=\"no\" to <pre>"
   },
   "AddToPreTags": {
     "message": "<pre>"
@@ -65,6 +89,15 @@
   "ResetSettingsButton": {
     "message": "Reset Settings"
   },
+  "ResetSettingsTitle": {
+    "message": "Reset Settings"
+  },
+  "ResetSettingsDescription": {
+    "message": "Restore settings other than excluded domains to their defaults."
+  },
+  "ResetButton": {
+    "message": "Reset"
+  },
   "ResetConfirmMessage": {
     "message": "Are you sure you want to reset settings? This will not affect the excluded domains."
   },
@@ -75,6 +108,6 @@
     "message": "Please enter a domain name."
   },
   "ReloadWarning": {
-    "message": "⚠ You need to reload each tab to apply the changes after modifying the settings."
+    "message": "Open tabs need reload. After settings changes, target tabs that are already open must be reloaded. The extension icon shows an R badge on those tabs."
   }
 }

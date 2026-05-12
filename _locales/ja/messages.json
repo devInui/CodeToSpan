@@ -5,6 +5,18 @@
   "OptionsTitle": {
     "message": "CodeToSpan オプション"
   },
+  "OptionsLead": {
+    "message": "設定項目を用途ごとに整理し、除外ドメインの行操作を左端に寄せる案です。"
+  },
+  "PageLanguageTitle": {
+    "message": "ページ言語"
+  },
+  "PageLanguageDescription": {
+    "message": "ページの言語とブラウザー言語を比較して、翻訳対象になりやすいページだけ処理します。"
+  },
+  "CodeElementRulesTitle": {
+    "message": "code要素のルール"
+  },
   "ExcludeTagsTitle": {
     "message": "親タグによる除外:"
   },
@@ -38,14 +50,26 @@
   "SkipStyledCodeDescription": {
     "message": "特定のスタイルを持つcodeタグは変換しません"
   },
+  "ProtectSizedCodeBlocks": {
+    "message": "サイズを持つcodeブロックを保護"
+  },
+  "ProtectSizedCodeDescription": {
+    "message": "サイズを持つcode要素は変換しません。"
+  },
   "BlockStyleElements": {
     "message": "blockおよびinline-blockスタイルの要素"
   },
   "TranslateNoTitle": {
     "message": "translate=\"no\"を追加"
   },
+  "TranslateAttributesTitle": {
+    "message": "翻訳属性"
+  },
   "TranslateNoDescription": {
-    "message": "コードブロックの翻訳を防ぐため、<pre>タグにtranslate=\"no\"属性を自動で追加します。"
+    "message": "機械翻訳から除外したい要素に属性を追加します。"
+  },
+  "AddTranslateNoToPre": {
+    "message": "<pre>にtranslate=\"no\"を追加"
   },
   "AddToPreTags": {
     "message": "<pre>"
@@ -65,6 +89,15 @@
   "ResetSettingsButton": {
     "message": "設定をリセット"
   },
+  "ResetSettingsTitle": {
+    "message": "設定をリセット"
+  },
+  "ResetSettingsDescription": {
+    "message": "除外ドメイン以外の設定を初期値に戻します。"
+  },
+  "ResetButton": {
+    "message": "リセット"
+  },
   "ResetConfirmMessage": {
     "message": "設定をリセットしてもよろしいですか？除外ドメインには影響しません。"
   },
@@ -75,6 +108,6 @@
     "message": "ドメイン名を入力してください。"
   },
   "ReloadWarning": {
-    "message": "警告: 設定を変更した後、変更を適用するには各タブを再読み込みする必要があります。"
+    "message": "開いているタブは再読み込みが必要です。設定変更後、すでに開いている対象タブは再読み込みが必要です。対象タブでは拡張機能アイコンにRバッジが付きます。"
   }
 }
