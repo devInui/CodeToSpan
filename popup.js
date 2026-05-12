@@ -211,11 +211,26 @@ document
   .getElementById("add-current-domain")
   .addEventListener("click", addCurrentDomain);
 
+function updateReloadBadge(tabId, reloadRequired) {
+  chrome.runtime.sendMessage(
+    { action: "updateReloadBadge", tabId, reloadRequired },
+    function () {
+      if (chrome.runtime.lastError) {
+        console.log(
+          "[CodeToSpan] Could not update reload badge:",
+          chrome.runtime.lastError,
+        );
+      }
+    },
+  );
+}
+
 // 設定の変更を検知
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   if (tabs.length === 0) return;
+  const activeTabId = tabs[0].id;
   chrome.tabs.sendMessage(
-    tabs[0].id,
+    activeTabId,
     { action: "checkSettings" },
     (response) => {
       console.log(
@@ -228,6 +243,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           "[CodeToSpan] Error sending message:",
           chrome.runtime.lastError,
         );
+        updateReloadBadge(activeTabId, false);
         return;
       }
 
@@ -235,6 +251,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         console.log(
           "[CodeToSpan] Error: No response received from content script.",
         );
+        updateReloadBadge(activeTabId, false);
         return;
       }
 
@@ -243,6 +260,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           "[CodeToSpan] Content script could not provide settings:",
           response.error,
         );
+        updateReloadBadge(activeTabId, false);
         return;
       }
 
@@ -264,6 +282,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             console.log("[CodeToSpan] Detected differences:", differences);
             displaySettingWarning(differences);
           }
+          updateReloadBadge(activeTabId, differences.length > 0);
         },
       );
     },

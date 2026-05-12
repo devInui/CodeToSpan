@@ -82,6 +82,9 @@ async function readPopupLatestSettingsDefaults() {
       runtime: {
         lastError: null,
         openOptionsPage() {},
+        sendMessage(_message, callback) {
+          callback?.({ success: true });
+        },
       },
       storage: {
         local: {

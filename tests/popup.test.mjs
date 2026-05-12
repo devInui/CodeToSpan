@@ -67,6 +67,7 @@ async function runPopup({
   const elements = new Map();
   let sentCheckSettingsRequest = false;
   const confirmMessages = [];
+  const runtimeMessages = [];
   const reloadedTabs = [];
   let syncValues = { ...latestSettings };
 
@@ -93,6 +94,10 @@ async function runPopup({
       runtime: {
         lastError: null,
         openOptionsPage() {},
+        sendMessage(message, callback) {
+          runtimeMessages.push(structuredClone(message));
+          callback?.({ success: true });
+        },
       },
       storage: {
         local: {
@@ -158,7 +163,13 @@ async function runPopup({
   const popupCode = await readFile(path.join(rootDir, "popup.js"), "utf8");
   vm.runInContext(popupCode, context, { filename: "popup.js" });
 
-  return { confirmMessages, elements, reloadedTabs, sentCheckSettingsRequest };
+  return {
+    confirmMessages,
+    elements,
+    reloadedTabs,
+    runtimeMessages,
+    sentCheckSettingsRequest,
+  };
 }
 
 test("shows outdated-settings warning when current tab settings differ from latest storage settings", async () => {
@@ -175,7 +186,7 @@ test("shows outdated-settings warning when current tab settings differ from late
     enabled: false,
   };
 
-  const { elements, sentCheckSettingsRequest } = await runPopup({
+  const { elements, runtimeMessages, sentCheckSettingsRequest } = await runPopup({
     currentSettings,
     latestSettings,
   });
@@ -188,6 +199,9 @@ test("shows outdated-settings warning when current tab settings differ from late
   assert.equal(diffList.children.length, 2);
   assert.match(diffList.children[0].textContent, /Extension Status$/);
   assert.equal(diffList.children[1].textContent, "Status: STOP -> RUN");
+  assert.deepEqual(runtimeMessages, [
+    { action: "updateReloadBadge", tabId: 123, reloadRequired: true },
+  ]);
 });
 
 test("outdated-settings warning uses concise v2.3 category labels", async () => {
@@ -242,7 +256,7 @@ test("does not show outdated-settings warning when content script reports settin
     excludedDomains: [],
   };
 
-  const { elements, sentCheckSettingsRequest } = await runPopup({
+  const { elements, runtimeMessages, sentCheckSettingsRequest } = await runPopup({
     currentSettings: { success: false, error: "Settings not initialized" },
     latestSettings,
   });
@@ -253,6 +267,9 @@ test("does not show outdated-settings warning when content script reports settin
   assert.equal(sentCheckSettingsRequest, true);
   assert.equal(warning.classList.contains("visible"), false);
   assert.equal(diffList.children.length, 0);
+  assert.deepEqual(runtimeMessages, [
+    { action: "updateReloadBadge", tabId: 123, reloadRequired: false },
+  ]);
 });
 
 test("does not show outdated-settings warning when content script sends no response", async () => {

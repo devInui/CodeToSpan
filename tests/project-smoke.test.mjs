@@ -15,6 +15,15 @@ test("manifest references existing content scripts", async () => {
   }
 });
 
+test("manifest references an existing background service worker", async () => {
+  const manifest = JSON.parse(
+    await readFile(path.join(rootDir, "manifest.json"), "utf8"),
+  );
+
+  assert.equal(manifest.background?.service_worker, "background.js");
+  await access(path.join(rootDir, manifest.background.service_worker));
+});
+
 test("locale files are valid Chrome i18n message JSON", async () => {
   for (const locale of ["en", "ja"]) {
     const messages = JSON.parse(

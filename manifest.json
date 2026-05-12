@@ -16,6 +16,9 @@
     "default_title": "CodeToSpan for Translation",
     "default_popup": "popup.html"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "permissions": ["storage"],
   "content_scripts": [
     {
