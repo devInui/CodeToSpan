@@ -187,8 +187,49 @@ test("shows outdated-settings warning when current tab settings differ from late
   assert.equal(warning.classList.contains("visible"), true);
   assert.equal(diffList.children.length, 2);
   assert.match(diffList.children[0].textContent, /Extension Status$/);
-  assert.match(diffList.children[1].textContent, /^OFF/);
-  assert.match(diffList.children[1].textContent, /ON$/);
+  assert.equal(diffList.children[1].textContent, "Status: STOP -> RUN");
+});
+
+test("outdated-settings warning uses concise v2.3 category labels", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: true, div: true, pre: true, span: true },
+    isLanguageCheckEnabled: false,
+    skipStyledCodeTags: true,
+    addTranslateNo: true,
+    excludedDomains: ["example.com"],
+  };
+  const currentSettings = {
+    enabled: false,
+    excludedTags: { a: false, div: false, pre: false, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: false,
+    excludedDomains: [],
+  };
+
+  const { elements } = await runPopup({
+    currentSettings,
+    latestSettings,
+  });
+
+  const diffTexts = elements
+    .get("settings-diff")
+    .children.map((child) => child.textContent);
+
+  assert.deepEqual(diffTexts, [
+    "Extension Status",
+    "Status: STOP -> RUN",
+    "Code Element Rules",
+    "Parent tags: none -> pre, div, a, span",
+    "Sized code blocks: OFF -> ON",
+    "Page Language",
+    "Another language only: ON -> OFF",
+    "Translate Attributes",
+    'translate="no": OFF -> ON',
+    "Exclude Domains",
+    "Domain list changed",
+  ]);
 });
 
 test("does not show outdated-settings warning when content script reports settings failure", async () => {

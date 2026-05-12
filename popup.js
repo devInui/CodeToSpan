@@ -271,55 +271,74 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 });
 
 function getSettingDifferences(current, latest) {
-  let diffs = [];
+  const diffs = [];
 
   if (current.enabled !== latest.enabled) {
-    diffs.push(`Extension was ${latest.enabled ? "enabled" : "disabled"}`);
+    diffs.push({
+      category: "Extension Status",
+      text: `Status: ${formatEnabled(current.enabled)} -> ${formatEnabled(
+        latest.enabled,
+      )}`,
+    });
   }
   if (
     JSON.stringify(current.excludedTags) !== JSON.stringify(latest.excludedTags)
   ) {
-    const changes = [];
-    for (const tag in latest.excludedTags) {
-      if (current.excludedTags[tag] !== latest.excludedTags[tag]) {
-        changes.push(
-          `${tag}: ${current.excludedTags[tag] ? "ON" : "OFF"} -> ${
-            latest.excludedTags[tag] ? "ON" : "OFF"
-          }`,
-        );
-      }
-    }
-    diffs.push(`Exclude Tags changed: ${changes.join(", ")}`);
+    diffs.push({
+      category: "Code Element Rules",
+      text: `Parent tags: ${formatParentTags(
+        current.excludedTags,
+      )} -> ${formatParentTags(latest.excludedTags)}`,
+    });
   }
   if (current.isLanguageCheckEnabled !== latest.isLanguageCheckEnabled) {
-    diffs.push(
-      `Language-Based Control: ${
-        current.isLanguageCheckEnabled ? "ON" : "OFF"
-      } -> ${latest.isLanguageCheckEnabled ? "ON" : "OFF"}`,
-    );
+    diffs.push({
+      category: "Page Language",
+      text: `Another language only: ${formatOnOff(
+        current.isLanguageCheckEnabled,
+      )} -> ${formatOnOff(latest.isLanguageCheckEnabled)}`,
+    });
   }
   if (current.skipStyledCodeTags !== latest.skipStyledCodeTags) {
-    diffs.push(
-      `Skip Styled Code Tags: ${current.skipStyledCodeTags ? "ON" : "OFF"} -> ${
-        latest.skipStyledCodeTags ? "ON" : "OFF"
-      }`,
-    );
+    diffs.push({
+      category: "Code Element Rules",
+      text: `Sized code blocks: ${formatOnOff(
+        current.skipStyledCodeTags,
+      )} -> ${formatOnOff(latest.skipStyledCodeTags)}`,
+    });
   }
   if (current.addTranslateNo !== latest.addTranslateNo) {
-    diffs.push(
-      `Add translate="no" setting: ${current.addTranslateNo ? "ON" : "OFF"} -> ${
-        latest.addTranslateNo ? "ON" : "OFF"
-      }`,
-    );
+    diffs.push({
+      category: "Translate Attributes",
+      text: `translate="no": ${formatOnOff(
+        current.addTranslateNo,
+      )} -> ${formatOnOff(latest.addTranslateNo)}`,
+    });
   }
   if (
     JSON.stringify(current.excludedDomains) !==
     JSON.stringify(latest.excludedDomains)
   ) {
-    diffs.push("Excluded Domains list changed");
+    diffs.push({
+      category: "Exclude Domains",
+      text: "Domain list changed",
+    });
   }
 
   return diffs;
+}
+
+function formatEnabled(enabled) {
+  return enabled ? "RUN" : "STOP";
+}
+
+function formatOnOff(enabled) {
+  return enabled ? "ON" : "OFF";
+}
+
+function formatParentTags(excludedTags) {
+  const tags = ["pre", "div", "a", "span"].filter((tag) => excludedTags[tag]);
+  return tags.length > 0 ? tags.join(", ") : "none";
 }
 
 function displaySettingWarning(differences) {
@@ -335,69 +354,21 @@ function displaySettingWarning(differences) {
     return;
   }
 
-  // カテゴリ分類
-  const categories = {
-    "Extension was": "Extension Status",
-    "Exclude Tags changed": chrome.i18n.getMessage("ExcludeTagsTitle"),
-    "Language-Based Control":
-      chrome.i18n.getMessage("LanguageControlTitle"),
-    "Skip Styled Code Tags":
-      chrome.i18n.getMessage("SkipStyledCodeTitle"),
-    'Add translate="no" setting':
-      chrome.i18n.getMessage("TranslateNoTitle"),
-    "Excluded Domains list changed":
-      chrome.i18n.getMessage("ExcludeDomainsTitle"),
-  };
-
   let categorizedChanges = {};
 
   // 各変更をカテゴリごとに整理
   differences.forEach((diff) => {
-    let foundCategory = null;
-
-    // カテゴリのキーに部分一致するものを検索
-    for (const key in categories) {
-      if (diff.startsWith(key)) {
-        foundCategory = key;
-        break;
-      }
+    if (!categorizedChanges[diff.category]) {
+      categorizedChanges[diff.category] = [];
     }
-
-    if (foundCategory) {
-      if (!categorizedChanges[foundCategory]) {
-        categorizedChanges[foundCategory] = [];
-      }
-
-      if (foundCategory === "Extension was") {
-        const wasEnabled = diff.includes("enabled");
-        categorizedChanges[foundCategory].push(
-          wasEnabled ? "OFF -> ON" : "ON -> OFF",
-        );
-      } else if (foundCategory === "Exclude Tags changed") {
-        // `Exclude Tags changed` の場合、タグごとに改行
-        let tagChanges = diff.replace(foundCategory + ": ", "").split(", ");
-        tagChanges.forEach((tagChange) => {
-          categorizedChanges[foundCategory].push(tagChange);
-        });
-      } else {
-        categorizedChanges[foundCategory].push(
-          diff.replace(foundCategory + ": ", ""),
-        );
-      }
-    } else {
-      // 該当しないものは "Other" カテゴリに
-      if (!categorizedChanges["Other"]) {
-        categorizedChanges["Other"] = [];
-      }
-      categorizedChanges["Other"].push(diff);
-    }
+    categorizedChanges[diff.category].push(diff.text);
   });
 
   // カテゴリごとにリスト表示
   for (const category in categorizedChanges) {
     let categoryTitle = document.createElement("div");
     categoryTitle.classList.add("settings-category");
-    categoryTitle.textContent = categories[category] || category;
+    categoryTitle.textContent = category;
     diffList.appendChild(categoryTitle);
 
     categorizedChanges[category].forEach((change) => {
