@@ -22,6 +22,12 @@ async function readSourceDefaults() {
   const context = {
     chrome: {
       storage: {
+        local: {
+          get(defaults, callback) {
+            callback(structuredClone(defaults));
+          },
+          set() {},
+        },
         sync: {
           get() {},
         },
@@ -78,6 +84,12 @@ async function readPopupLatestSettingsDefaults() {
         openOptionsPage() {},
       },
       storage: {
+        local: {
+          get(defaults, callback) {
+            callback(structuredClone(defaults));
+          },
+          set() {},
+        },
         sync: {
           get(defaults, callback) {
             storageGetDefaults.push(structuredClone(defaults));
@@ -214,6 +226,16 @@ class TestElement {
     this.placeholder = "";
     this.style = {};
     this.textContent = "";
+    this._classNames = new Set();
+  }
+
+  get classList() {
+    return {
+      add: (...names) => names.forEach((name) => this._classNames.add(name)),
+      contains: (name) => this._classNames.has(name),
+      remove: (...names) =>
+        names.forEach((name) => this._classNames.delete(name)),
+    };
   }
 
   addEventListener(type, listener) {

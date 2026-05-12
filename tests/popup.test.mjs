@@ -58,6 +58,7 @@ async function runPopup({
   currentSettings,
   latestSettings,
   initialStorage = { enabled: true },
+  initialLocalStorage = { popupShowMoreExpanded: false },
   sendMessageLastError = null,
 } = {}) {
   const html = await readFile(path.join(rootDir, "popup.html"), "utf8");
@@ -89,6 +90,15 @@ async function runPopup({
         openOptionsPage() {},
       },
       storage: {
+        local: {
+          values: { ...initialLocalStorage },
+          get(defaults, callback) {
+            callback({ ...defaults, ...this.values });
+          },
+          set(values) {
+            this.values = { ...this.values, ...values };
+          },
+        },
         sync: {
           get(defaults, callback) {
             const values =
@@ -241,4 +251,33 @@ test("outdated-settings warning does not reserve popup space while hidden", asyn
   assert.ok(visibleRule, "missing #settings-warning.visible rule");
   assert.match(hiddenRule.groups.body, /display:\s*none;/u);
   assert.match(visibleRule.groups.body, /display:\s*block;/u);
+});
+
+test("show more state is restored and persisted with local storage", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { elements } = await runPopup({
+    currentSettings: latestSettings,
+    latestSettings,
+    initialLocalStorage: { popupShowMoreExpanded: true },
+  });
+
+  const moreActions = elements.get("more-actions");
+  const showMoreToggle = elements.get("show-more-toggle");
+  const showMoreLabel = elements.get("show-more-label");
+
+  assert.equal(moreActions.classList.contains("visible"), true);
+  assert.equal(showMoreLabel.textContent, "Show Less");
+
+  showMoreToggle.listeners.click();
+
+  assert.equal(moreActions.classList.contains("visible"), false);
+  assert.equal(showMoreLabel.textContent, "Show More");
 });

@@ -77,9 +77,37 @@ function switchLayoutText(toggleState) {
   }
 }
 
+function setMoreActionsExpanded(expanded) {
+  const moreActions = document.getElementById("more-actions");
+  const showMoreLabel = document.getElementById("show-more-label");
+  const showMoreIcon = document.getElementById("show-more-icon");
+
+  if (expanded) {
+    moreActions.classList.add("visible");
+  } else {
+    moreActions.classList.remove("visible");
+  }
+  showMoreLabel.textContent = expanded ? "Show Less" : "Show More";
+  showMoreIcon.classList.remove(expanded ? "down" : "up");
+  showMoreIcon.classList.add(expanded ? "up" : "down");
+}
+
+chrome.storage.local.get({ popupShowMoreExpanded: false }, function (data) {
+  setMoreActionsExpanded(data.popupShowMoreExpanded);
+});
+
+document
+  .getElementById("show-more-toggle")
+  .addEventListener("click", function () {
+    const moreActions = document.getElementById("more-actions");
+    const expanded = !moreActions.classList.contains("visible");
+    setMoreActionsExpanded(expanded);
+    chrome.storage.local.set({ popupShowMoreExpanded: expanded });
+  });
+
 document
   .getElementById("openOptionsPage")
-  .addEventListener("click", function () {
+  .addEventListener("click", function (event) {
     event.preventDefault();
     chrome.runtime.openOptionsPage();
   });
