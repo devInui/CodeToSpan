@@ -58,6 +58,7 @@ async function runPopup({
   currentSettings,
   latestSettings,
   initialStorage = { enabled: true },
+  sendMessageLastError = null,
 } = {}) {
   const html = await readFile(path.join(rootDir, "popup.html"), "utf8");
   const elements = new Map();
@@ -108,7 +109,9 @@ async function runPopup({
           assert.deepEqual(Object.keys(message), ["action"]);
           assert.equal(message.action, "checkSettings");
           sentCheckSettingsRequest = true;
+          context.chrome.runtime.lastError = sendMessageLastError;
           callback(currentSettings);
+          context.chrome.runtime.lastError = null;
         },
       },
     },
@@ -188,6 +191,35 @@ test("does not show outdated-settings warning when content script reports settin
 test("does not show outdated-settings warning when content script sends no response", async () => {
   const { elements, sentCheckSettingsRequest } = await runPopup({
     currentSettings: undefined,
+  });
+
+  const warning = elements.get("settings-warning");
+  const diffList = elements.get("settings-diff");
+
+  assert.equal(sentCheckSettingsRequest, true);
+  assert.equal(warning.classList.contains("visible"), false);
+  assert.equal(diffList.children.length, 0);
+});
+
+test("does not show outdated-settings warning when content script is unavailable", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { elements, sentCheckSettingsRequest } = await runPopup({
+    currentSettings: {
+      ...latestSettings,
+      enabled: false,
+    },
+    latestSettings,
+    sendMessageLastError: {
+      message: "Could not establish connection. Receiving end does not exist.",
+    },
   });
 
   const warning = elements.get("settings-warning");
