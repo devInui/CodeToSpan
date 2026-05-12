@@ -22,6 +22,10 @@ npm.cmd test
   - content-script startup behavior with mocked `chrome.*` and DOM APIs.
   - popup-to-content toggle message compatibility.
 
-The content-script tests intentionally describe the expected healthy behavior.
-They fail on the current refactor branch and identify the v2.3 regression points
-that need to be fixed next.
+The content-script tests describe the expected healthy behavior and guard the
+v2.3 regression points identified during the repair work.
+
+## Manual Chrome Verification
+
+Use [docs/manual-chrome-extension-verification.md](docs/manual-chrome-extension-verification.md)
+for manual checks that require loading the unpacked extension in Chrome.
