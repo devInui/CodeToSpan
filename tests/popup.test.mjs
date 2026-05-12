@@ -229,3 +229,16 @@ test("does not show outdated-settings warning when content script is unavailable
   assert.equal(warning.classList.contains("visible"), false);
   assert.equal(diffList.children.length, 0);
 });
+
+test("outdated-settings warning does not reserve popup space while hidden", async () => {
+  const css = await readFile(path.join(rootDir, "popup.css"), "utf8");
+  const hiddenRule = css.match(/#settings-warning\s*\{(?<body>[^}]*)\}/u);
+  const visibleRule = css.match(
+    /#settings-warning\.visible\s*\{(?<body>[^}]*)\}/u,
+  );
+
+  assert.ok(hiddenRule, "missing #settings-warning rule");
+  assert.ok(visibleRule, "missing #settings-warning.visible rule");
+  assert.match(hiddenRule.groups.body, /display:\s*none;/u);
+  assert.match(visibleRule.groups.body, /display:\s*block;/u);
+});

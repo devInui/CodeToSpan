@@ -156,7 +156,7 @@ function getSettingDifferences(current, latest) {
     for (const tag in latest.excludedTags) {
       if (current.excludedTags[tag] !== latest.excludedTags[tag]) {
         changes.push(
-          `${tag}: ${current.excludedTags[tag] ? "ON" : "OFF"} → ${
+          `${tag}: ${current.excludedTags[tag] ? "ON" : "OFF"} -> ${
             latest.excludedTags[tag] ? "ON" : "OFF"
           }`,
         );
@@ -168,19 +168,19 @@ function getSettingDifferences(current, latest) {
     diffs.push(
       `Language-Based Control: ${
         current.isLanguageCheckEnabled ? "ON" : "OFF"
-      } → ${latest.isLanguageCheckEnabled ? "ON" : "OFF"}`,
+      } -> ${latest.isLanguageCheckEnabled ? "ON" : "OFF"}`,
     );
   }
   if (current.skipStyledCodeTags !== latest.skipStyledCodeTags) {
     diffs.push(
-      `Skip Styled Code Tags: ${current.skipStyledCodeTags ? "ON" : "OFF"} → ${
+      `Skip Styled Code Tags: ${current.skipStyledCodeTags ? "ON" : "OFF"} -> ${
         latest.skipStyledCodeTags ? "ON" : "OFF"
       }`,
     );
   }
   if (current.addTranslateNo !== latest.addTranslateNo) {
     diffs.push(
-      `Add translate="no" setting: ${current.addTranslateNo ? "ON" : "OFF"} → ${
+      `Add translate="no" setting: ${current.addTranslateNo ? "ON" : "OFF"} -> ${
         latest.addTranslateNo ? "ON" : "OFF"
       }`,
     );
@@ -210,16 +210,16 @@ function displaySettingWarning(differences) {
 
   // カテゴリ分類
   const categories = {
-    "Extension was": "🛠️ Extension Status",
-    "Exclude Tags changed": "🏷️ " + chrome.i18n.getMessage("ExcludeTagsTitle"),
+    "Extension was": "Extension Status",
+    "Exclude Tags changed": chrome.i18n.getMessage("ExcludeTagsTitle"),
     "Language-Based Control":
-      "🈵 " + chrome.i18n.getMessage("LanguageControlTitle"),
+      chrome.i18n.getMessage("LanguageControlTitle"),
     "Skip Styled Code Tags":
-      "🎨 " + chrome.i18n.getMessage("SkipStyledCodeTitle"),
+      chrome.i18n.getMessage("SkipStyledCodeTitle"),
     'Add translate="no" setting':
-      "🌍 " + chrome.i18n.getMessage("TranslateNoTitle"),
+      chrome.i18n.getMessage("TranslateNoTitle"),
     "Excluded Domains list changed":
-      "🌐 " + chrome.i18n.getMessage("ExcludeDomainsTitle"),
+      chrome.i18n.getMessage("ExcludeDomainsTitle"),
   };
 
   let categorizedChanges = {};
@@ -244,7 +244,7 @@ function displaySettingWarning(differences) {
       if (foundCategory === "Extension was") {
         const wasEnabled = diff.includes("enabled");
         categorizedChanges[foundCategory].push(
-          wasEnabled ? "OFF → ON" : "ON → OFF",
+          wasEnabled ? "OFF -> ON" : "ON -> OFF",
         );
       } else if (foundCategory === "Exclude Tags changed") {
         // `Exclude Tags changed` の場合、タグごとに改行
