@@ -31,14 +31,22 @@ function toggleExtension() {
           return;
         }
         if (tabs.length > 0) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            command: "toggle",
-            enabled: newEnabledState,
-          });
+          confirmReloadCurrentTab(tabs[0].id);
         }
       });
     });
   });
+}
+
+function confirmReloadCurrentTab(tabId) {
+  if (confirm("Reload current tab to apply this change?")) {
+    updateReloadBadge(tabId, false);
+    chrome.tabs.reload(tabId);
+    window.close();
+    return;
+  }
+
+  updateReloadBadge(tabId, true);
 }
 
 function updateToggleButtonState(enabled) {

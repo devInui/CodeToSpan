@@ -8,6 +8,7 @@ const rootDir = path.resolve(import.meta.dirname, "..");
 
 async function runBackground() {
   const listeners = [];
+  const tabUpdateListeners = [];
   const badgeTextCalls = [];
   const badgeColorCalls = [];
 
@@ -28,6 +29,13 @@ async function runBackground() {
           },
         },
       },
+      tabs: {
+        onUpdated: {
+          addListener(listener) {
+            tabUpdateListeners.push(listener);
+          },
+        },
+      },
     },
   };
 
@@ -45,13 +53,27 @@ async function runBackground() {
     return responses;
   }
 
-  return { badgeColorCalls, badgeTextCalls, listeners, sendMessage };
+  function updateTab(tabId, changeInfo) {
+    for (const listener of tabUpdateListeners) {
+      listener(tabId, changeInfo);
+    }
+  }
+
+  return {
+    badgeColorCalls,
+    badgeTextCalls,
+    listeners,
+    tabUpdateListeners,
+    sendMessage,
+    updateTab,
+  };
 }
 
 test("background applies and clears the reload badge per tab", async () => {
   const runtime = await runBackground();
 
   assert.equal(runtime.listeners.length, 1);
+  assert.equal(runtime.tabUpdateListeners.length, 1);
   assert.deepEqual(
     runtime.sendMessage({
       action: "updateReloadBadge",
@@ -71,4 +93,13 @@ test("background applies and clears the reload badge per tab", async () => {
     reloadRequired: false,
   });
   assert.deepEqual(runtime.badgeTextCalls.at(-1), { tabId: 123, text: "" });
+});
+
+test("background clears the reload badge when a tab starts loading", async () => {
+  const runtime = await runBackground();
+
+  runtime.updateTab(123, { status: "loading" });
+
+  assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "" }]);
+  assert.deepEqual(runtime.badgeColorCalls, []);
 });

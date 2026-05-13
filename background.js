@@ -26,3 +26,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   sendResponse({ success: true });
   return false;
 });
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status === "loading") {
+    setReloadBadge(tabId, false);
+  }
+});

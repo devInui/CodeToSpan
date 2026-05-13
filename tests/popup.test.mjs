@@ -69,6 +69,7 @@ async function runPopup({
   const confirmMessages = [];
   const runtimeMessages = [];
   const reloadedTabs = [];
+  const tabMessages = [];
   let syncValues = { ...latestSettings };
 
   for (const [, id] of html.matchAll(/\bid="([^"]+)"/g)) {
@@ -132,12 +133,15 @@ async function runPopup({
         },
         sendMessage(tabId, message, callback) {
           assert.equal(tabId, 123);
-          assert.deepEqual(Object.keys(message), ["action"]);
-          assert.equal(message.action, "checkSettings");
-          sentCheckSettingsRequest = true;
-          context.chrome.runtime.lastError = sendMessageLastError;
-          callback(currentSettings);
-          context.chrome.runtime.lastError = null;
+          tabMessages.push(structuredClone(message));
+          if (message.action === "checkSettings") {
+            sentCheckSettingsRequest = true;
+            context.chrome.runtime.lastError = sendMessageLastError;
+            callback(currentSettings);
+            context.chrome.runtime.lastError = null;
+            return;
+          }
+          callback?.({ success: true });
         },
       },
     },
@@ -169,6 +173,7 @@ async function runPopup({
     reloadedTabs,
     runtimeMessages,
     sentCheckSettingsRequest,
+    tabMessages,
   };
 }
 
@@ -415,6 +420,62 @@ test("show more state is restored and persisted with local storage", async () =>
 
   assert.equal(moreActions.classList.contains("visible"), false);
   assert.equal(showMoreLabel.textContent, "Show More");
+});
+
+test("run stop changes reload the current tab only after confirmation", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { confirmMessages, elements, reloadedTabs, runtimeMessages, tabMessages } =
+    await runPopup({
+      currentSettings: latestSettings,
+      latestSettings,
+      confirmReload: true,
+    });
+
+  elements.get("toggle").listeners.click();
+
+  assert.equal(elements.get("toggle").checked, false);
+  assert.deepEqual(confirmMessages, ["Reload current tab to apply this change?"]);
+  assert.deepEqual(reloadedTabs, [123]);
+  assert.deepEqual(tabMessages, [{ action: "checkSettings" }]);
+  assert.deepEqual(runtimeMessages.at(-1), {
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: false,
+  });
+});
+
+test("run stop changes mark reload required when reload is declined", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { elements, reloadedTabs, runtimeMessages } = await runPopup({
+    currentSettings: latestSettings,
+    latestSettings,
+    confirmReload: false,
+  });
+
+  elements.get("toggle").listeners.click();
+
+  assert.deepEqual(reloadedTabs, []);
+  assert.deepEqual(runtimeMessages.at(-1), {
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: true,
+  });
 });
 
 test("check domain shows the active tab hostname with add action", async () => {
