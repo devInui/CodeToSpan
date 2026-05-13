@@ -89,6 +89,15 @@
   "ResetSettingsButton": {
     "message": "Reset Settings"
   },
+  "SettingsManagementTitle": {
+    "message": "Settings Management"
+  },
+  "AutoReloadOnRunStop": {
+    "message": "Reload automatically after RUN/STOP changes"
+  },
+  "AutoReloadOnRunStopDescription": {
+    "message": "When enabled, the current tab reloads without confirmation after RUN/STOP changes."
+  },
   "ResetSettingsTitle": {
     "message": "Reset Settings"
   },

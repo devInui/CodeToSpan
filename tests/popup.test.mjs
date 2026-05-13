@@ -57,7 +57,7 @@ class TestElement {
 async function runPopup({
   currentSettings,
   latestSettings,
-  initialStorage = { enabled: true },
+  initialStorage = { enabled: true, autoReloadOnRunStop: false },
   initialLocalStorage = { popupShowMoreExpanded: false },
   activeTabUrl = "https://example.com/article",
   confirmReload = false,
@@ -115,6 +115,9 @@ async function runPopup({
             const values =
               Object.keys(defaults).length === 1 && "enabled" in defaults
                 ? { ...defaults, ...initialStorage }
+                : Object.keys(defaults).length === 1 &&
+                    "autoReloadOnRunStop" in defaults
+                  ? { ...defaults, ...initialStorage }
                 : { ...defaults, ...syncValues };
             callback(values);
           },
@@ -475,6 +478,35 @@ test("run stop changes mark reload required when reload is declined", async () =
     action: "updateReloadBadge",
     tabId: 123,
     reloadRequired: true,
+  });
+});
+
+test("run stop changes auto reload when the option is enabled", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { confirmMessages, elements, reloadedTabs, runtimeMessages } =
+    await runPopup({
+      currentSettings: latestSettings,
+      latestSettings,
+      initialStorage: { enabled: true, autoReloadOnRunStop: true },
+      confirmReload: false,
+    });
+
+  elements.get("toggle").listeners.click();
+
+  assert.deepEqual(confirmMessages, []);
+  assert.deepEqual(reloadedTabs, [123]);
+  assert.deepEqual(runtimeMessages.at(-1), {
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: false,
   });
 });
 

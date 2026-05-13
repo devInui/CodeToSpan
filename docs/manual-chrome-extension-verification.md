@@ -118,6 +118,7 @@ local files, enable `Allow access to file URLs` for the extension from
    - language detection: enabled
    - skip styled code tags: disabled
    - add `translate="no"` to `<pre>`: enabled
+   - automatic reload after RUN/STOP changes: disabled
    - excluded domains: empty on a fresh install or fresh Chrome profile
 3. Existing excluded domains are not reset by the options reset action. Manually
    clear them before this check, or verify the empty excluded-domains default

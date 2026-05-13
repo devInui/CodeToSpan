@@ -62,8 +62,13 @@
             </section>
 
             <section class="settings-section reset-section">
-              <h2 data-i18n="ResetSettingsTitle"></h2>
-              <div class="reset-row">
+              <h2 data-i18n="SettingsManagementTitle"></h2>
+              <label class="checkbox-label">
+                <input type="checkbox" id="autoReloadOnRunStop" />
+                <span data-i18n="AutoReloadOnRunStop"></span>
+              </label>
+              <p class="setting-note" data-i18n="AutoReloadOnRunStopDescription"></p>
+              <div class="reset-row management-reset-row">
                 <p class="description" data-i18n="ResetSettingsDescription"></p>
                 <button
                   id="resetSettings"

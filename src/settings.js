@@ -5,6 +5,7 @@ const CODETOSPAN_DEFAULT_SETTINGS = {
   isLanguageCheckEnabled: true,
   skipStyledCodeTags: false,
   addTranslateNo: true,
+  autoReloadOnRunStop: false,
   excludedDomains: [],
 };
 

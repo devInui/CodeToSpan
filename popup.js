@@ -39,14 +39,19 @@ function toggleExtension() {
 }
 
 function confirmReloadCurrentTab(tabId) {
-  if (confirm("Reload current tab to apply this change?")) {
-    updateReloadBadge(tabId, false);
-    chrome.tabs.reload(tabId);
-    window.close();
-    return;
-  }
+  chrome.storage.sync.get({ autoReloadOnRunStop: false }, function (data) {
+    if (
+      data.autoReloadOnRunStop ||
+      confirm("Reload current tab to apply this change?")
+    ) {
+      updateReloadBadge(tabId, false);
+      chrome.tabs.reload(tabId);
+      window.close();
+      return;
+    }
 
-  updateReloadBadge(tabId, true);
+    updateReloadBadge(tabId, true);
+  });
 }
 
 function updateToggleButtonState(enabled) {
@@ -279,6 +284,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           isLanguageCheckEnabled: true,
           skipStyledCodeTags: false,
           addTranslateNo: true,
+          autoReloadOnRunStop: false,
           excludedDomains: [],
         },
         (latestSettings) => {

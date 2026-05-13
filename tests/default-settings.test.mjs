@@ -11,6 +11,7 @@ const activeDefaultKeys = [
   "isLanguageCheckEnabled",
   "skipStyledCodeTags",
   "addTranslateNo",
+  "autoReloadOnRunStop",
   "excludedDomains",
 ];
 
@@ -112,6 +113,7 @@ async function readPopupLatestSettingsDefaults() {
             isLanguageCheckEnabled: true,
             skipStyledCodeTags: false,
             addTranslateNo: true,
+            autoReloadOnRunStop: false,
             excludedDomains: [],
           });
         },
@@ -275,6 +277,7 @@ test("active default settings stay aligned across settings, popup, and options",
     isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
     addTranslateNo: true,
+    autoReloadOnRunStop: false,
     excludedDomains: [],
   });
   assert.deepEqual(popupDefaults, pick(sourceDefaults, activeDefaultKeys));

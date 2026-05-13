@@ -9,6 +9,7 @@ v2.3 のストアページ更新では、次の変更点がユーザーに伝わ
 - 現在タブのドメインを popup で確認し、`Exclude Domains` へ追加可能。
 - 設定変更後、再読み込みが必要なタブでは `Outdated Settings Detected.` と `R` バッジで通知。
 - RUN / STOP 変更時に、現在タブを再読み込みするか確認。
+- RUN / STOP 変更後の自動リロード設定を追加。
 - Optionsページの設定分類と Exclude Domains の操作性を改善。
 
 ## Suggested Release Notes
@@ -18,6 +19,7 @@ CodeToSpan for Translation v2.3 improves the popup and settings workflow.
 - Added reload-required notifications for already open tabs.
 - Added an `R` badge when the current tab needs reload.
 - Added a popup domain check and quick add flow for Exclude Domains.
+- Added an option to reload automatically after RUN/STOP changes.
 - Moved Options and Check Domain under Show More for a cleaner popup.
 - Refreshed the Options page layout and Exclude Domains controls.
 - Improved behavior so excluded pages do not show unnecessary reload warnings.

@@ -40,6 +40,7 @@ function loadSettings() {
       isLanguageCheckEnabled: true,
       skipStyledCodeTags: false,
       addTranslateNo: true,
+      autoReloadOnRunStop: false,
       excludedDomains: [],
     },
     function (data) {
@@ -56,6 +57,8 @@ function loadSettings() {
         data.skipStyledCodeTags;
       document.getElementById("addNoTranslateToPre").checked =
         data.addTranslateNo;
+      document.getElementById("autoReloadOnRunStop").checked =
+        data.autoReloadOnRunStop;
       updateExcludedDomainsList(data.excludedDomains);
     },
   );
@@ -104,6 +107,10 @@ function initializeEventListeners() {
   document
     .getElementById("addNoTranslateToPre")
     .addEventListener("change", saveTranslateSettings);
+
+  document
+    .getElementById("autoReloadOnRunStop")
+    .addEventListener("change", saveAutoReloadSetting);
 
   document.getElementById("addDomain").addEventListener("click", addDomain);
 
@@ -155,6 +162,17 @@ function saveTranslateSettings() {
   chrome.storage.sync.set({ addTranslateNo: addTranslateNo }, function () {
     console.log("Translate settings saved");
   });
+}
+
+function saveAutoReloadSetting() {
+  var autoReloadOnRunStop =
+    document.getElementById("autoReloadOnRunStop").checked;
+  chrome.storage.sync.set(
+    { autoReloadOnRunStop: autoReloadOnRunStop },
+    function () {
+      console.log("Auto reload setting saved:", autoReloadOnRunStop);
+    },
+  );
 }
 
 function addDomain() {
@@ -216,6 +234,7 @@ document.getElementById("resetSettings").addEventListener("click", function () {
     isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
     addTranslateNo: true,
+    autoReloadOnRunStop: false,
   };
 
   // 設定をリセット

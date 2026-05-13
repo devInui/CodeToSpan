@@ -89,6 +89,15 @@
   "ResetSettingsButton": {
     "message": "設定をリセット"
   },
+  "SettingsManagementTitle": {
+    "message": "設定管理"
+  },
+  "AutoReloadOnRunStop": {
+    "message": "RUN/STOP変更後に自動で再読み込み"
+  },
+  "AutoReloadOnRunStopDescription": {
+    "message": "有効にすると、RUN/STOP変更後に確認せず現在タブを再読み込みします。"
+  },
   "ResetSettingsTitle": {
     "message": "設定をリセット"
   },
