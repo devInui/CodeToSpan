@@ -246,6 +246,67 @@ test("outdated-settings warning uses concise v2.3 category labels", async () => 
   ]);
 });
 
+test("does not require reload when a language-excluded page stays excluded", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: true, div: true, pre: true, span: true },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: false,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: true,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+  const currentSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: false,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: false,
+    excludedDomains: [],
+  };
+
+  const { elements, runtimeMessages } = await runPopup({
+    currentSettings,
+    latestSettings,
+  });
+
+  assert.equal(elements.get("settings-warning").classList.contains("visible"), false);
+  assert.equal(elements.get("settings-diff").children.length, 0);
+  assert.deepEqual(runtimeMessages, [
+    { action: "updateReloadBadge", tabId: 123, reloadRequired: false },
+  ]);
+});
+
+test("requires reload when a domain setting changes the current page scope", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: ["example.com"],
+  };
+  const currentSettings = {
+    ...latestSettings,
+    excludedDomains: [],
+  };
+
+  const { elements, runtimeMessages } = await runPopup({
+    currentSettings,
+    latestSettings,
+  });
+
+  assert.equal(elements.get("settings-warning").classList.contains("visible"), true);
+  assert.deepEqual(runtimeMessages, [
+    { action: "updateReloadBadge", tabId: 123, reloadRequired: true },
+  ]);
+});
+
 test("does not show outdated-settings warning when content script reports settings failure", async () => {
   const latestSettings = {
     enabled: true,

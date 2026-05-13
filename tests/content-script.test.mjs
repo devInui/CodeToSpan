@@ -146,6 +146,8 @@ test("keeps the popup checkSettings action contract", async () => {
   assert.equal(responses.length, 1);
   assert.equal(responses[0].success, true);
   assert.equal(responses[0].enabled, true);
+  assert.equal(responses[0].hostname, "example.com");
+  assert.equal(responses[0].isBrowserAndPageLanguageDifferent, true);
   assert.deepEqual(responses[0].excludedTags, {
     a: false,
     div: false,

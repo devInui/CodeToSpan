@@ -56,6 +56,8 @@ function handleSettingsCheck(callback) {
   callback({
     success: true,
     enabled: codeToSpanState.enabled,
+    hostname: window.location.hostname,
+    isBrowserAndPageLanguageDifferent: isBrowserAndPageLanguageDifferent(),
     ...codeToSpanState.settings,
   });
 }

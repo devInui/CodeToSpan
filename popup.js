@@ -276,7 +276,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         (latestSettings) => {
           console.log("[CodeToSpan] Latest storage settings:", latestSettings);
 
-          let differences = getSettingDifferences(response, latestSettings);
+          let differences = getReloadRequiredDifferences(
+            response,
+            latestSettings,
+          );
 
           if (differences.length > 0) {
             console.log("[CodeToSpan] Detected differences:", differences);
@@ -345,6 +348,39 @@ function getSettingDifferences(current, latest) {
   }
 
   return diffs;
+}
+
+function getReloadRequiredDifferences(current, latest) {
+  const differences = getSettingDifferences(current, latest);
+  if (differences.length === 0 || !hasPageContext(current)) {
+    return differences;
+  }
+
+  const currentApplies = shouldSettingsApplyToPage(current, current);
+  const latestApplies = shouldSettingsApplyToPage(latest, current);
+
+  if (!currentApplies && !latestApplies) {
+    return [];
+  }
+
+  return differences;
+}
+
+function hasPageContext(current) {
+  return (
+    typeof current.hostname === "string" &&
+    typeof current.isBrowserAndPageLanguageDifferent === "boolean"
+  );
+}
+
+function shouldSettingsApplyToPage(settings, pageContext) {
+  if (settings.excludedDomains.includes(pageContext.hostname)) {
+    return false;
+  }
+  if (!settings.isLanguageCheckEnabled) {
+    return true;
+  }
+  return pageContext.isBrowserAndPageLanguageDifferent;
 }
 
 function formatEnabled(enabled) {
