@@ -1,30 +1,28 @@
-# Manual Chrome Extension Verification
+# Chrome拡張機能 手動確認手順
 
-Use this checklist after automated tests pass, or when validating behavior that
-requires a real Chrome extension runtime.
+自動テストが通ったあと、実Chrome拡張機能の実行環境が必要な挙動を確認するときに使います。
 
-## Load the Unpacked Extension
+## 未パッケージ拡張機能を読み込む
 
-1. Open Chrome and go to `chrome://extensions`.
-2. Enable `Developer mode`.
-3. Click `Load unpacked`.
-4. Select the repository root directory, which contains `manifest.json`.
-5. Confirm `CodeToSpan for Translation` appears without extension errors.
+1. Chromeで `chrome://extensions` を開く。
+2. `デベロッパー モード` を有効にする。
+3. `パッケージ化されていない拡張機能を読み込む` をクリックする。
+4. `manifest.json` があるリポジトリルートを選択する。
+5. `CodeToSpan for Translation` が拡張機能エラーなしで表示されることを確認する。
 
-## Open Options and Popup
+## Options と popup を開く
 
-1. Click `Details` for the extension and open `Extension options`.
-2. Confirm the options page loads and shows the settings controls.
-3. Pin or open the extension action, then open the popup.
-4. Confirm the popup opens and shows the Run/Stop toggle and Show More button.
-5. Click Show More.
-6. Confirm Options and Check Domain are shown.
-7. Use the Options button in the popup and confirm it opens the same options page.
+1. 拡張機能の `詳細` から `拡張機能のオプション` を開く。
+2. Optionsページが読み込まれ、設定項目が表示されることを確認する。
+3. 拡張機能アイコンをピン留めまたはクリックし、popupを開く。
+4. popupに RUN/STOP トグルと Show More ボタンが表示されることを確認する。
+5. Show More をクリックする。
+6. Options と Check Domain が表示されることを確認する。
+7. popupの Options ボタンから同じOptionsページが開くことを確認する。
 
-## Prepare a Small Test Page
+## 小さなテストページを用意する
 
-Save this as a local HTML file outside the repository, or use an existing
-programming documentation page with inline `<code>` elements.
+次のHTMLをリポジトリ外のローカルHTMLファイルとして保存するか、インライン `<code>` 要素がある既存のプログラミングドキュメントページを使います。
 
 ```html
 <!doctype html>
@@ -36,101 +34,97 @@ programming documentation page with inline `<code>` elements.
 </html>
 ```
 
-Open the file in Chrome. If Chrome does not run extension content scripts on
-local files, enable `Allow access to file URLs` for the extension from
-`chrome://extensions`, or use a public programming documentation page instead.
+Chromeでファイルを開きます。ローカルファイルでcontent scriptが動かない場合は、`chrome://extensions` の拡張機能詳細から `ファイルの URL へのアクセスを許可する` を有効にするか、公開されているプログラミングドキュメントページで確認します。
 
-## Verify Code-to-Span Behavior
+## code から span への変換を確認する
 
-1. Make sure the extension is set to `RUN` in the popup.
-2. Use a page whose `lang` differs from the browser language, or temporarily
-   disable language detection in options. The default language detection setting
-   skips processing when the page language matches the browser language.
-3. Reload the test page.
-4. Inspect the inline `<code>` element in Chrome DevTools.
-5. Confirm eligible inline code is replaced with a `<span>` element.
-6. Confirm code inside excluded parent tags, such as `<pre>` by default, is not
-   converted.
-7. Confirm `<pre>` blocks receive `translate="no"` when that option is enabled.
+1. popupで拡張機能が `RUN` になっていることを確認する。
+2. ブラウザ言語と異なる `lang` のページを使う。難しい場合は、Optionsで言語検出を一時的に無効にする。
+3. テストページを再読み込みする。
+4. Chrome DevToolsでインライン `<code>` 要素を確認する。
+5. 対象のインラインコードが `<span>` 要素へ置き換わっていることを確認する。
+6. 既定で除外される `<pre>` など、除外対象の親タグ内にあるcodeが変換されないことを確認する。
+7. `translate="no"` オプションが有効な場合、`<pre>` ブロックに `translate="no"` が付くことを確認する。
 
-## Verify Outdated-Settings Warning
+## Outdated Settings Detected を確認する
 
-1. Open the test page and leave it loaded.
-2. Open the options page and change a setting that affects page processing.
-3. Open the popup on the still-loaded test page.
-4. Confirm the popup shows the outdated-settings warning with a Reload button.
-5. Confirm the extension icon shows an `R` badge for the current tab.
-6. Click Reload and confirm the active tab reloads.
-7. Reopen the popup and confirm the warning is cleared when the page is using
-   the latest settings.
-8. Confirm the `R` badge is cleared after reload.
+1. テストページを開いたままにする。
+2. Optionsページで、ページ処理に影響する設定を変更する。
+3. まだ再読み込みしていないテストページ上でpopupを開く。
+4. popupに `Outdated Settings Detected.` と Reload ボタンが表示されることを確認する。
+5. 現在タブの拡張機能アイコンに `R` バッジが表示されることを確認する。
+6. Reload をクリックし、アクティブタブが再読み込みされることを確認する。
+7. popupを開き直し、ページが最新設定を使っているときは警告が消えることを確認する。
+8. 再読み込み後に `R` バッジが消えることを確認する。
 
-## Verify Run/Stop Toggle Reload
+## RUN/STOP 切替時のリロードを確認する
 
-1. Open the popup on the test page.
-2. Switch from `RUN` to `STOP`.
-3. Confirm the browser asks whether to reload the current tab.
-4. Choose OK and confirm the active tab reloads.
-5. Inspect the page after reload and confirm code elements are not converted
-   while stopped.
-6. Switch from `STOP` back to `RUN`.
-7. Choose Cancel when asked to reload.
-8. Confirm the current tab is not reloaded and the extension icon shows an `R`
-   badge.
-9. Reload the tab manually.
-10. Confirm the `R` badge is cleared and eligible code elements are converted
-   again.
+1. テストページ上でpopupを開く。
+2. `RUN` から `STOP` に切り替える。
+3. 現在タブを再読み込みするか確認ダイアログが出ることを確認する。
+4. OKを選び、アクティブタブが再読み込みされることを確認する。
+5. 再読み込み後、STOP中はcode要素が変換されないことを確認する。
+6. `STOP` から `RUN` に戻す。
+7. 確認ダイアログでキャンセルを選ぶ。
+8. 現在タブが再読み込みされず、拡張機能アイコンに `R` バッジが表示されることを確認する。
+9. タブを手動で再読み込みする。
+10. `R` バッジが消え、対象のcode要素が再び変換されることを確認する。
 
-## Verify Check Domain
+## 自動リロード設定を確認する
 
-1. Open the popup on a normal `http` or `https` page.
-2. Click Show More.
-3. Click Check Domain.
-4. Confirm the popup shows only the page hostname, without protocol, path, or
-   query string.
-5. Confirm a long hostname scrolls inside the hostname field without widening
-   the popup.
-6. Click Add.
-7. Confirm the domain is added to Exclude Domains.
-8. Confirm the button changes to Added and is disabled.
-9. Confirm a reload prompt is shown after adding the domain.
-10. Open `chrome://extensions`, open the popup, and confirm Check Domain shows
-    Domain unavailable.
+1. Optionsページの `Settings Management` を確認する。
+2. `Reload automatically after RUN/STOP changes` を有効にする。
+3. テストページ上でpopupを開く。
+4. RUN/STOP を切り替える。
+5. 確認ダイアログなしで現在タブが再読み込みされることを確認する。
+6. Optionsページで同設定を無効に戻す。
 
-## Verify Excluded-Page Reload Warning
+## Check Domain を確認する
 
-1. Open a page that is skipped because the page language matches the browser
-   language while language checking is enabled.
-2. Change a setting that would only affect converted code elements.
-3. Open the popup on the still-loaded page.
-4. Confirm the outdated-settings warning is not shown.
-5. Change Exclude Domains so the current page changes from included to excluded,
-   or from excluded to included.
-6. Open the popup on the still-loaded page.
-7. Confirm the outdated-settings warning is shown because the page scope changed.
+1. 通常の `http` または `https` ページ上でpopupを開く。
+2. Show More をクリックする。
+3. Check Domain をクリックする。
+4. popupにページのhostnameだけが表示されることを確認する。プロトコル、パス、クエリは含めない。
+5. 長いhostnameでもpopup全体が広がらず、hostname欄だけ横スクロールできることを確認する。
+6. Add をクリックする。
+7. ドメインが Exclude Domains に追加されることを確認する。
+8. ボタンが Added に変わり、無効化されることを確認する。
+9. ドメイン追加後にリロード確認が表示されることを確認する。
+10. `chrome://extensions` でpopupを開き、Check Domain が `Domain unavailable` を表示することを確認する。
 
-## Verify Language and Default Settings
+## 除外中ページのリロード警告を確認する
 
-1. Reset settings from the options page.
-2. Confirm the default settings are:
+1. 言語検出が有効な状態で、ブラウザ言語とページ言語が同じため処理がスキップされるページを開く。
+2. 変換済みcode要素にだけ影響する設定を変更する。
+3. まだ再読み込みしていないページ上でpopupを開く。
+4. `Outdated Settings Detected.` が表示されないことを確認する。
+5. Exclude Domains を変更し、現在ページが対象から除外へ、または除外から対象へ変わる状態にする。
+6. まだ再読み込みしていないページ上でpopupを開く。
+7. ページの処理対象状態が変わったため、`Outdated Settings Detected.` が表示されることを確認する。
+
+## 言語設定と既定値を確認する
+
+1. OptionsページからReset Settingsを実行する。
+2. 既定値が次の通りであることを確認する。
    - enabled: `true`
-   - excluded parent tags: `<pre>` only
-   - language detection: enabled
-   - skip styled code tags: disabled
-   - add `translate="no"` to `<pre>`: enabled
-   - automatic reload after RUN/STOP changes: disabled
-   - excluded domains: empty on a fresh install or fresh Chrome profile
-3. Existing excluded domains are not reset by the options reset action. Manually
-   clear them before this check, or verify the empty excluded-domains default
-   only on a fresh install or fresh Chrome profile.
-4. With language detection enabled, use a page whose `lang` differs from the
-   browser language and confirm processing runs.
-5. Use a page whose `lang` matches the browser language and confirm processing
-   is skipped.
-6. Disable language detection in options, reload the test page, and confirm
-   processing runs regardless of the page language.
+   - 除外する親タグ: `<pre>` のみ
+   - 言語検出: 有効
+   - サイズを持つcode要素の保護: 無効
+   - `<pre>` への `translate="no"` 追加: 有効
+   - RUN/STOP変更後の自動リロード: 無効
+   - 除外ドメイン: 新規インストールまたは新規Chromeプロファイルでは空
+3. 既存の除外ドメインはReset Settingsでは削除されない。必要に応じて手動で消すか、新規インストールまたは新規Chromeプロファイルで空の既定値を確認する。
+4. 言語検出が有効な状態で、ブラウザ言語と異なる `lang` のページでは処理が実行されることを確認する。
+5. ブラウザ言語と同じ `lang` のページでは処理がスキップされることを確認する。
+6. Optionsで言語検出を無効にし、テストページを再読み込みするとページ言語に関係なく処理されることを確認する。
 
-## Notes to Record
+## 記録する内容
 
-Record the Chrome version, operating system, test page URL, settings used,
-pass/fail results, and any console errors from the page or extension popup.
+次の内容を記録します。
+
+- Chromeのバージョン
+- OS
+- テストページURL
+- 使用した設定
+- 各確認項目の合否
+- ページまたは拡張機能popupのコンソールエラー
