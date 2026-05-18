@@ -510,7 +510,7 @@ test("run stop changes auto reload when the option is enabled", async () => {
   });
 });
 
-test("check domain shows the active tab hostname with add action", async () => {
+test("check domain shows the content script hostname with add action", async () => {
   const latestSettings = {
     enabled: true,
     excludedTags: { a: false, div: false, pre: true, span: false },
@@ -519,11 +519,15 @@ test("check domain shows the active tab hostname with add action", async () => {
     addTranslateNo: true,
     excludedDomains: [],
   };
+  const currentSettings = {
+    ...latestSettings,
+    hostname: "content-script.example",
+  };
 
   const { elements } = await runPopup({
-    currentSettings: latestSettings,
+    currentSettings,
     latestSettings,
-    activeTabUrl: "https://docs.example.co.jp/path",
+    activeTabUrl: "https://tab-url.example/path",
   });
 
   elements.get("check-domain").listeners.click();
@@ -533,7 +537,7 @@ test("check domain shows the active tab hostname with add action", async () => {
     elements.get("domain-check").classList.contains("unavailable"),
     false,
   );
-  assert.equal(elements.get("current-domain").textContent, "docs.example.co.jp");
+  assert.equal(elements.get("current-domain").textContent, "content-script.example");
   assert.equal(elements.get("add-current-domain").textContent, "Add");
   assert.equal(elements.get("add-current-domain").disabled, false);
 });
@@ -545,23 +549,27 @@ test("check domain marks an already excluded hostname as added", async () => {
     isLanguageCheckEnabled: true,
     skipStyledCodeTags: false,
     addTranslateNo: true,
-    excludedDomains: ["docs.example.co.jp"],
+    excludedDomains: ["content-script.example"],
+  };
+  const currentSettings = {
+    ...latestSettings,
+    hostname: "content-script.example",
   };
 
   const { elements } = await runPopup({
-    currentSettings: latestSettings,
+    currentSettings,
     latestSettings,
-    activeTabUrl: "https://docs.example.co.jp/path",
+    activeTabUrl: "https://tab-url.example/path",
   });
 
   elements.get("check-domain").listeners.click();
 
-  assert.equal(elements.get("current-domain").textContent, "docs.example.co.jp");
+  assert.equal(elements.get("current-domain").textContent, "content-script.example");
   assert.equal(elements.get("add-current-domain").textContent, "Added");
   assert.equal(elements.get("add-current-domain").disabled, true);
 });
 
-test("add domain stores the active hostname and reloads after confirmation", async () => {
+test("add domain stores the content script hostname and reloads after confirmation", async () => {
   const latestSettings = {
     enabled: true,
     excludedTags: { a: false, div: false, pre: true, span: false },
@@ -570,11 +578,15 @@ test("add domain stores the active hostname and reloads after confirmation", asy
     addTranslateNo: true,
     excludedDomains: [],
   };
+  const currentSettings = {
+    ...latestSettings,
+    hostname: "content-script.example",
+  };
 
   const { confirmMessages, elements, reloadedTabs } = await runPopup({
-    currentSettings: latestSettings,
+    currentSettings,
     latestSettings,
-    activeTabUrl: "https://docs.example.co.jp/path",
+    activeTabUrl: "https://tab-url.example/path",
     confirmReload: true,
   });
 
@@ -587,7 +599,7 @@ test("add domain stores the active hostname and reloads after confirmation", asy
   assert.deepEqual(reloadedTabs, [123]);
 });
 
-test("check domain shows unavailable state when the tab has no hostname", async () => {
+test("check domain shows unavailable state when the content script has no hostname", async () => {
   const { elements } = await runPopup({
     currentSettings: undefined,
     latestSettings: {

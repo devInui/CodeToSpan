@@ -40,7 +40,6 @@ function shouldReplace(displayStyle) {
 // 現在のドメインが除外リストに含まれているか確認
 function isDomainExcluded() {
   const currentDomain = window.location.hostname; // 現在のドメインを取得
-  console.log("(CodeToSpan)This Page's domain:", currentDomain);
   if (excludedDomains.includes(currentDomain))
     console.log(
       "(CodeToSpan)This domain is in excludedDomains in CodeToSpan option page",

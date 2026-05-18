@@ -19,7 +19,6 @@ function initializeCodeToSpanSettings(callback) {
 // 現在のドメインがCodeToSpanの除外リストに含まれているか確認
 function isCurrentDomainExcluded(excludedDomains) {
   const currentDomain = window.location.hostname;
-  console.log("(CodeToSpan)This Page's domain:", currentDomain);
   if (excludedDomains.includes(currentDomain)) {
     console.log(
       "(CodeToSpan)This domain is in excludedDomains in CodeToSpan option page",

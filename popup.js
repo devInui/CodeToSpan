@@ -137,20 +137,6 @@ function getActiveTab(callback) {
   });
 }
 
-function getHostnameFromTab(tab) {
-  if (!tab || !tab.url) return "";
-
-  try {
-    const url = new URL(tab.url);
-    if (url.protocol !== "http:" && url.protocol !== "https:") {
-      return "";
-    }
-    return url.hostname;
-  } catch (_error) {
-    return "";
-  }
-}
-
 function showDomainUnavailable() {
   currentDomainForAdd = "";
   const domainCheck = document.getElementById("domain-check");
@@ -179,15 +165,30 @@ function showDomainCheck(hostname, domains) {
 
 function checkCurrentDomain() {
   getActiveTab(function (tab) {
-    const hostname = getHostnameFromTab(tab);
-    if (!hostname) {
+    if (!tab) {
       showDomainUnavailable();
       return;
     }
 
-    chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
-      showDomainCheck(hostname, data.excludedDomains);
-    });
+    chrome.tabs.sendMessage(
+      tab.id,
+      { action: "checkSettings" },
+      function (response) {
+        const hostname =
+          response?.success !== false && typeof response?.hostname === "string"
+            ? response.hostname
+            : "";
+
+        if (chrome.runtime.lastError || !hostname) {
+          showDomainUnavailable();
+          return;
+        }
+
+        chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
+          showDomainCheck(hostname, data.excludedDomains);
+        });
+      },
+    );
   });
 }
 
