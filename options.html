@@ -12,7 +12,7 @@
         <p data-i18n="OptionsLead"></p>
       </header>
 
-      <form id="optionsForm">
+      <div id="optionsForm">
         <div class="settings-grid">
           <div class="settings-columns">
             <section class="settings-section page-language">
@@ -92,7 +92,11 @@
                   placeholder=""
                   data-i18n-placeholder="AddDomainPlaceholder"
                 />
-                <button id="addDomain" data-i18n="AddDomainButton"></button>
+                <button
+                  id="addDomain"
+                  type="button"
+                  data-i18n="AddDomainButton"
+                ></button>
               </div>
             </div>
             <p
@@ -103,7 +107,7 @@
 
           <div class="warning-message" data-i18n="ReloadWarning"></div>
         </div>
-      </form>
+      </div>
     </main>
     <script src="options.js"></script>
   </body>

@@ -83,6 +83,7 @@ function updateExcludedDomainsList(domains) {
     var removeButton = document.createElement("button");
     removeButton.textContent = "X";
     removeButton.className = "removeDomain";
+    removeButton.type = "button";
     removeButton.setAttribute("data-domain", domain);
 
     li.appendChild(removeButton);
@@ -190,10 +191,10 @@ function addDomain() {
     }
 
     domains.push(newDomain);
-    chrome.storage.sync.set(
-      { excludedDomains: domains },
-      updateExcludedDomainsList(domains),
-    );
+    chrome.storage.sync.set({ excludedDomains: domains }, function () {
+      updateExcludedDomainsList(domains);
+      document.getElementById("newDomain").value = "";
+    });
   });
 }
 

@@ -220,6 +220,69 @@ async function readOptionsDefaults() {
   };
 }
 
+async function loadOptionsContext({
+  excludedDomains = [],
+  onAlert = () => {},
+} = {}) {
+  const html = await readFile(path.join(rootDir, "options.html"), "utf8");
+  const elements = new Map();
+  const storageSetValues = [];
+
+  for (const [, id] of html.matchAll(/\bid="([^"]+)"/g)) {
+    elements.set(id, new TestElement(id));
+  }
+
+  const context = {
+    alert: onAlert,
+    chrome: {
+      i18n: {
+        getMessage(key) {
+          return key;
+        },
+      },
+      storage: {
+        sync: {
+          get(_defaults, callback) {
+            callback({ excludedDomains: [...excludedDomains] });
+          },
+          set(values, callback) {
+            storageSetValues.push(structuredClone(values));
+            callback?.();
+          },
+        },
+      },
+    },
+    console: {
+      log() {},
+    },
+    document: {
+      addEventListener() {},
+      createElement(tagName) {
+        return new TestElement("", tagName);
+      },
+      getElementById(id) {
+        return elements.get(id) ?? null;
+      },
+      querySelector(selector) {
+        if (selector === "h1") {
+          return new TestElement("", "h1");
+        }
+        return null;
+      },
+      querySelectorAll() {
+        return [];
+      },
+      title: "",
+    },
+  };
+
+  vm.createContext(context);
+  const code = await readFile(path.join(rootDir, "options.js"), "utf8");
+  vm.runInContext(code, context, { filename: "options.js" });
+
+  return { context, elements, storageSetValues };
+}
+
 class TestElement {
   constructor(id = "", tagName = "div") {
     this.id = id;
@@ -231,6 +294,8 @@ class TestElement {
     this.placeholder = "";
     this.style = {};
     this.textContent = "";
+    this.type = "";
+    this.value = "";
     this._classNames = new Set();
   }
 
@@ -347,6 +412,52 @@ test("excluded domain rows render remove button before domain text", async () =>
 
   const [row] = elements.get("excludedDomainsList").children;
   assert.equal(row.children[0].className, "removeDomain");
+  assert.equal(row.children[0].type, "button");
   assert.equal(row.children[1].className, "domain-name");
   assert.equal(row.children[1].textContent, "example.com");
+});
+
+test("options settings container is not a submitting form", async () => {
+  const html = await readFile(path.join(rootDir, "options.html"), "utf8");
+
+  assert.match(html, /<div id="optionsForm">/);
+  assert.doesNotMatch(html, /<form id="optionsForm">/);
+  assert.match(html, /<button\s+id="addDomain"\s+type="button"/);
+});
+
+test("adding a unique domain clears the input after storing it", async () => {
+  const { context, elements, storageSetValues } = await loadOptionsContext();
+  elements.get("newDomain").value = "example.com";
+
+  context.addDomain();
+
+  assert.deepEqual(storageSetValues, [{ excludedDomains: ["example.com"] }]);
+  assert.equal(elements.get("newDomain").value, "");
+});
+
+test("failed domain additions preserve the input value", async () => {
+  const alerts = [];
+  const emptyAdd = await loadOptionsContext({
+    onAlert(message) {
+      alerts.push(message);
+    },
+  });
+  emptyAdd.elements.get("newDomain").value = "   ";
+
+  emptyAdd.context.addDomain();
+
+  assert.equal(emptyAdd.elements.get("newDomain").value, "   ");
+
+  const duplicateAdd = await loadOptionsContext({
+    excludedDomains: ["example.com"],
+    onAlert(message) {
+      alerts.push(message);
+    },
+  });
+  duplicateAdd.elements.get("newDomain").value = "example.com";
+
+  duplicateAdd.context.addDomain();
+
+  assert.equal(duplicateAdd.elements.get("newDomain").value, "example.com");
+  assert.deepEqual(alerts, ["EnterDomainMessage", "DomainExistsMessage"]);
 });
