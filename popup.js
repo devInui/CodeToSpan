@@ -50,7 +50,7 @@ function confirmReloadCurrentTab(tabId) {
       return;
     }
 
-    updateReloadBadge(tabId, true);
+    recomputeReloadStateForTab(tabId);
   });
 }
 
@@ -239,12 +239,9 @@ function updateReloadBadge(tabId, reloadRequired) {
   );
 }
 
-// 設定の変更を検知
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  if (tabs.length === 0) return;
-  const activeTabId = tabs[0].id;
+function recomputeReloadStateForTab(tabId) {
   chrome.tabs.sendMessage(
-    activeTabId,
+    tabId,
     { action: "checkSettings" },
     (response) => {
       console.log(
@@ -257,7 +254,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           "[CodeToSpan] Error sending message:",
           chrome.runtime.lastError,
         );
-        updateReloadBadge(activeTabId, false);
+        displaySettingWarning([]);
+        updateReloadBadge(tabId, false);
         return;
       }
 
@@ -265,7 +263,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         console.log(
           "[CodeToSpan] Error: No response received from content script.",
         );
-        updateReloadBadge(activeTabId, false);
+        displaySettingWarning([]);
+        updateReloadBadge(tabId, false);
         return;
       }
 
@@ -274,7 +273,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           "[CodeToSpan] Content script could not provide settings:",
           response.error,
         );
-        updateReloadBadge(activeTabId, false);
+        displaySettingWarning([]);
+        updateReloadBadge(tabId, false);
         return;
       }
 
@@ -298,13 +298,19 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
           if (differences.length > 0) {
             console.log("[CodeToSpan] Detected differences:", differences);
-            displaySettingWarning(differences);
           }
-          updateReloadBadge(activeTabId, differences.length > 0);
+          displaySettingWarning(differences);
+          updateReloadBadge(tabId, differences.length > 0);
         },
       );
     },
   );
+}
+
+// 設定の変更を検知
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  if (tabs.length === 0) return;
+  recomputeReloadStateForTab(tabs[0].id);
 });
 
 function getSettingDifferences(current, latest) {

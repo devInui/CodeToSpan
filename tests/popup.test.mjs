@@ -455,7 +455,7 @@ test("run stop changes reload the current tab only after confirmation", async ()
   });
 });
 
-test("run stop changes mark reload required when reload is declined", async () => {
+test("run stop changes recompute outdated state when reload is declined", async () => {
   const latestSettings = {
     enabled: true,
     excludedTags: { a: false, div: false, pre: true, span: false },
@@ -465,7 +465,7 @@ test("run stop changes mark reload required when reload is declined", async () =
     excludedDomains: [],
   };
 
-  const { elements, reloadedTabs, runtimeMessages } = await runPopup({
+  const { elements, reloadedTabs, runtimeMessages, tabMessages } = await runPopup({
     currentSettings: latestSettings,
     latestSettings,
     confirmReload: false,
@@ -474,10 +474,52 @@ test("run stop changes mark reload required when reload is declined", async () =
   elements.get("toggle").listeners.click();
 
   assert.deepEqual(reloadedTabs, []);
+  assert.equal(elements.get("settings-warning").classList.contains("visible"), true);
+  assert.deepEqual(
+    elements.get("settings-diff").children.map((child) => child.textContent),
+    ["Extension Status", "Status: RUN -> STOP"],
+  );
+  assert.deepEqual(tabMessages, [
+    { action: "checkSettings" },
+    { action: "checkSettings" },
+  ]);
   assert.deepEqual(runtimeMessages.at(-1), {
     action: "updateReloadBadge",
     tabId: 123,
     reloadRequired: true,
+  });
+});
+
+test("run stop changes keep unchanged excluded pages clear when reload is declined", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: false,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+
+  const { elements, runtimeMessages, tabMessages } = await runPopup({
+    currentSettings: latestSettings,
+    latestSettings,
+    confirmReload: false,
+  });
+
+  elements.get("toggle").listeners.click();
+
+  assert.equal(elements.get("settings-warning").classList.contains("visible"), false);
+  assert.equal(elements.get("settings-diff").children.length, 0);
+  assert.deepEqual(tabMessages, [
+    { action: "checkSettings" },
+    { action: "checkSettings" },
+  ]);
+  assert.deepEqual(runtimeMessages.at(-1), {
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: false,
   });
 });
 
