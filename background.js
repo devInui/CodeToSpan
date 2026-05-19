@@ -1,3 +1,5 @@
+import { getReloadRequiredDifferences as getReloadRequiredDifferencesCore } from "./src/reloadState.js";
+
 const RELOAD_BADGE_TEXT = "R";
 const RELOAD_BADGE_COLOR = "#f57c00";
 const DEFAULT_SETTINGS = {
@@ -73,42 +75,11 @@ function getSettingDifferences(current, latest) {
 }
 
 function getReloadRequiredDifferences(current, latest) {
-  let differences = getSettingDifferences(current, latest);
-  if (differences.length === 0 || !hasPageContext(current)) {
-    return differences;
-  }
-
-  const currentApplies = shouldSettingsApplyToPage(current, current);
-  const latestApplies = shouldSettingsApplyToPage(latest, current);
-
-  if (!currentApplies && !latestApplies) {
-    return [];
-  }
-
-  if (currentApplies === latestApplies) {
-    differences = differences.filter(
-      (difference) => difference !== "excludedDomains",
-    );
-  }
-
-  return differences;
-}
-
-function hasPageContext(current) {
-  return (
-    typeof current.hostname === "string" &&
-    typeof current.isBrowserAndPageLanguageDifferent === "boolean"
-  );
-}
-
-function shouldSettingsApplyToPage(settings, pageContext) {
-  if (settings.excludedDomains.includes(pageContext.hostname)) {
-    return false;
-  }
-  if (!settings.isLanguageCheckEnabled) {
-    return true;
-  }
-  return pageContext.isBrowserAndPageLanguageDifferent;
+  return getReloadRequiredDifferencesCore(current, latest, {
+    getSettingDifferences,
+    isExcludedDomainsDifference: (difference) =>
+      difference === "excludedDomains",
+  });
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

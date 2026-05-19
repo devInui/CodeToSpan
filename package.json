@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check background.js && node --check popup.js && node --check options.js && node --check content.js && node --check src/settings.js && node --check src/domProcessor.js && node --check src/messageHandler.js && node --check src/content.js",
+    "check": "node --check background.js && node --check popup.js && node --check options.js && node --check content.js && node --check src/settings.js && node --check src/domProcessor.js && node --check src/messageHandler.js && node --check src/content.js && node --check src/reloadState.js",
     "test": "node --test"
   }
 }

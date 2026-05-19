@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
+import { getReloadRequiredDifferences as getReloadRequiredDifferencesCore } from "../src/reloadState.js";
 
 const rootDir = path.resolve(import.meta.dirname, "..");
 
@@ -86,6 +87,7 @@ async function runPopup({
   };
 
   const context = {
+    getReloadRequiredDifferencesCore,
     chrome: {
       i18n: {
         getMessage(key) {
@@ -167,7 +169,9 @@ async function runPopup({
   };
 
   vm.createContext(context);
-  const popupCode = await readFile(path.join(rootDir, "popup.js"), "utf8");
+  const popupCode = (
+    await readFile(path.join(rootDir, "popup.js"), "utf8")
+  ).replace(/^import .+;\r?\n\r?\n/u, "");
   vm.runInContext(popupCode, context, { filename: "popup.js" });
 
   return {

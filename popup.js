@@ -1,3 +1,5 @@
+import { getReloadRequiredDifferences as getReloadRequiredDifferencesCore } from "./src/reloadState.js";
+
 // ボタンがクリックされたときに実行される関数
 function toggleExtension() {
   chrome.storage.sync.get({ enabled: true }, function (data) {
@@ -379,42 +381,11 @@ function getSettingDifferences(current, latest) {
 }
 
 function getReloadRequiredDifferences(current, latest) {
-  let differences = getSettingDifferences(current, latest);
-  if (differences.length === 0 || !hasPageContext(current)) {
-    return differences;
-  }
-
-  const currentApplies = shouldSettingsApplyToPage(current, current);
-  const latestApplies = shouldSettingsApplyToPage(latest, current);
-
-  if (!currentApplies && !latestApplies) {
-    return [];
-  }
-
-  if (currentApplies === latestApplies) {
-    differences = differences.filter(
-      (difference) => difference.category !== "Exclude Domains",
-    );
-  }
-
-  return differences;
-}
-
-function hasPageContext(current) {
-  return (
-    typeof current.hostname === "string" &&
-    typeof current.isBrowserAndPageLanguageDifferent === "boolean"
-  );
-}
-
-function shouldSettingsApplyToPage(settings, pageContext) {
-  if (settings.excludedDomains.includes(pageContext.hostname)) {
-    return false;
-  }
-  if (!settings.isLanguageCheckEnabled) {
-    return true;
-  }
-  return pageContext.isBrowserAndPageLanguageDifferent;
+  return getReloadRequiredDifferencesCore(current, latest, {
+    getSettingDifferences,
+    isExcludedDomainsDifference: (difference) =>
+      difference.category === "Exclude Domains",
+  });
 }
 
 function formatEnabled(enabled) {

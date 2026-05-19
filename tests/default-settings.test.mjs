@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
+import { getReloadRequiredDifferences as getReloadRequiredDifferencesCore } from "../src/reloadState.js";
 
 const rootDir = path.resolve(import.meta.dirname, "..");
 const activeDefaultKeys = [
@@ -74,6 +75,7 @@ async function readPopupLatestSettingsDefaults() {
   }
 
   const context = {
+    getReloadRequiredDifferencesCore,
     chrome: {
       i18n: {
         getMessage(key) {
@@ -140,7 +142,9 @@ async function readPopupLatestSettingsDefaults() {
   };
 
   vm.createContext(context);
-  const code = await readFile(path.join(rootDir, "popup.js"), "utf8");
+  const code = (
+    await readFile(path.join(rootDir, "popup.js"), "utf8")
+  ).replace(/^import .+;\r?\n\r?\n/u, "");
   vm.runInContext(code, context, { filename: "popup.js" });
 
   return storageGetDefaults.find((defaults) =>

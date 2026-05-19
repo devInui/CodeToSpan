@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
+import { getReloadRequiredDifferences as getReloadRequiredDifferencesCore } from "../src/reloadState.js";
 
 const rootDir = path.resolve(import.meta.dirname, "..");
 
@@ -21,6 +22,7 @@ async function runBackground({
   const pendingTabMessageResponses = [];
 
   const context = {
+    getReloadRequiredDifferencesCore,
     chrome: {
       action: {
         setBadgeBackgroundColor(details) {
@@ -71,7 +73,9 @@ async function runBackground({
   };
 
   vm.createContext(context);
-  const code = await readFile(path.join(rootDir, "background.js"), "utf8");
+  const code = (
+    await readFile(path.join(rootDir, "background.js"), "utf8")
+  ).replace(/^import .+;\r?\n\r?\n/u, "");
   vm.runInContext(code, context, { filename: "background.js" });
 
   function sendMessage(message) {

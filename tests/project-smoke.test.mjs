@@ -21,7 +21,14 @@ test("manifest references an existing background service worker", async () => {
   );
 
   assert.equal(manifest.background?.service_worker, "background.js");
+  assert.equal(manifest.background?.type, "module");
   await access(path.join(rootDir, manifest.background.service_worker));
+});
+
+test("popup loads its script as an ES module", async () => {
+  const popupHtml = await readFile(path.join(rootDir, "popup.html"), "utf8");
+
+  assert.match(popupHtml, /<script\s+type="module"\s+src="popup\.js"><\/script>/u);
 });
 
 test("locale files are valid Chrome i18n message JSON", async () => {
