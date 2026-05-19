@@ -315,6 +315,99 @@ test("requires reload when a domain setting changes the current page scope", asy
   ]);
 });
 
+test("does not require reload when unrelated excluded domains are added or deleted", async () => {
+  const baseSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+  };
+  const cases = [
+    {
+      name: "unrelated add",
+      currentExcludedDomains: [],
+      latestExcludedDomains: ["unrelated.example"],
+    },
+    {
+      name: "unrelated delete",
+      currentExcludedDomains: ["unrelated.example"],
+      latestExcludedDomains: [],
+    },
+  ];
+
+  for (const testCase of cases) {
+    const { elements, runtimeMessages } = await runPopup({
+      currentSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.currentExcludedDomains,
+      },
+      latestSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.latestExcludedDomains,
+      },
+    });
+
+    assert.equal(
+      elements.get("settings-warning").classList.contains("visible"),
+      false,
+      testCase.name,
+    );
+    assert.equal(elements.get("settings-diff").children.length, 0);
+    assert.deepEqual(runtimeMessages, [
+      { action: "updateReloadBadge", tabId: 123, reloadRequired: false },
+    ]);
+  }
+});
+
+test("requires reload when the current hostname is added to or deleted from excluded domains", async () => {
+  const baseSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+  };
+  const cases = [
+    {
+      name: "current hostname add",
+      currentExcludedDomains: [],
+      latestExcludedDomains: ["example.com"],
+    },
+    {
+      name: "current hostname delete",
+      currentExcludedDomains: ["example.com"],
+      latestExcludedDomains: [],
+    },
+  ];
+
+  for (const testCase of cases) {
+    const { elements, runtimeMessages } = await runPopup({
+      currentSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.currentExcludedDomains,
+      },
+      latestSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.latestExcludedDomains,
+      },
+    });
+
+    assert.equal(
+      elements.get("settings-warning").classList.contains("visible"),
+      true,
+      testCase.name,
+    );
+    assert.deepEqual(runtimeMessages, [
+      { action: "updateReloadBadge", tabId: 123, reloadRequired: true },
+    ]);
+  }
+});
+
 test("does not show outdated-settings warning when content script reports settings failure", async () => {
   const latestSettings = {
     enabled: true,

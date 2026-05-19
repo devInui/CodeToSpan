@@ -379,7 +379,7 @@ function getSettingDifferences(current, latest) {
 }
 
 function getReloadRequiredDifferences(current, latest) {
-  const differences = getSettingDifferences(current, latest);
+  let differences = getSettingDifferences(current, latest);
   if (differences.length === 0 || !hasPageContext(current)) {
     return differences;
   }
@@ -389,6 +389,12 @@ function getReloadRequiredDifferences(current, latest) {
 
   if (!currentApplies && !latestApplies) {
     return [];
+  }
+
+  if (currentApplies === latestApplies) {
+    differences = differences.filter(
+      (difference) => difference.category !== "Exclude Domains",
+    );
   }
 
   return differences;

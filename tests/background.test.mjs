@@ -228,3 +228,81 @@ test("background keeps excluded pages clear using popup reload rules", async () 
 
   assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "" }]);
 });
+
+test("background keeps badge clear when unrelated excluded domains are added or deleted", async () => {
+  const baseSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+  };
+  const cases = [
+    {
+      currentExcludedDomains: [],
+      latestExcludedDomains: ["unrelated.example"],
+    },
+    {
+      currentExcludedDomains: ["unrelated.example"],
+      latestExcludedDomains: [],
+    },
+  ];
+
+  for (const testCase of cases) {
+    const runtime = await runBackground({
+      currentSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.currentExcludedDomains,
+      },
+      latestSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.latestExcludedDomains,
+      },
+    });
+
+    runtime.activateTab(123);
+
+    assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "" }]);
+  }
+});
+
+test("background sets badge when current hostname is added to or deleted from excluded domains", async () => {
+  const baseSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+  };
+  const cases = [
+    {
+      currentExcludedDomains: [],
+      latestExcludedDomains: ["example.com"],
+    },
+    {
+      currentExcludedDomains: ["example.com"],
+      latestExcludedDomains: [],
+    },
+  ];
+
+  for (const testCase of cases) {
+    const runtime = await runBackground({
+      currentSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.currentExcludedDomains,
+      },
+      latestSettings: {
+        ...baseSettings,
+        excludedDomains: testCase.latestExcludedDomains,
+      },
+    });
+
+    runtime.activateTab(123);
+
+    assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "R" }]);
+  }
+});
