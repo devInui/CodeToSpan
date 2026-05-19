@@ -34,8 +34,8 @@ body {
 .settings-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  justify-content: flex-start;
+  gap: 24px;
   margin-bottom: 18px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 14px;
@@ -154,7 +154,7 @@ p {
 .header-toggle-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
   flex: 0 0 auto;
 }

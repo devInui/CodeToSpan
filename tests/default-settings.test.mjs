@@ -437,6 +437,7 @@ test("options settings container is not a submitting form", async () => {
 
 test("options RUN STOP toggle lives in the title header", async () => {
   const html = await readFile(path.join(rootDir, "options.html"), "utf8");
+  const css = await readFile(path.join(rootDir, "options.css"), "utf8");
   const header = html.match(/<header class="settings-header">[\s\S]*?<\/header>/);
   const settingsManagement = html.match(
     /<section class="settings-section reset-section">[\s\S]*?<\/section>/,
@@ -451,6 +452,8 @@ test("options RUN STOP toggle lives in the title header", async () => {
   assert.doesNotMatch(settingsManagement[0], /id="enabled"/);
   assert.doesNotMatch(settingsManagement[0], /RunStopControl/);
   assert.doesNotMatch(settingsManagement[0], /RunStopControlDescription/);
+  assert.match(css, /\.settings-header\s*{[\s\S]*justify-content: flex-start;/);
+  assert.match(css, /\.header-toggle-row\s*{[\s\S]*justify-content: flex-start;/);
 });
 
 test("options can switch RUN STOP without reload prompt", async () => {
