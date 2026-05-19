@@ -29,6 +29,8 @@ function setReloadBadge(tabId, reloadRequired) {
 function refreshReloadBadge(tabId) {
   if (!Number.isInteger(tabId)) return;
 
+  setReloadBadge(tabId, false);
+
   chrome.tabs.sendMessage(tabId, { action: "checkSettings" }, (response) => {
     if (chrome.runtime.lastError || !response || response.success === false) {
       setReloadBadge(tabId, false);

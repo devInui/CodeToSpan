@@ -10,6 +10,7 @@ async function runBackground({
   currentSettings,
   latestSettings = {},
   sendMessageLastError = null,
+  deferSendMessageResponse = false,
 } = {}) {
   const listeners = [];
   const tabUpdateListeners = [];
@@ -17,6 +18,7 @@ async function runBackground({
   const badgeTextCalls = [];
   const badgeColorCalls = [];
   const tabMessages = [];
+  const pendingTabMessageResponses = [];
 
   const context = {
     chrome: {
@@ -46,6 +48,10 @@ async function runBackground({
       tabs: {
         sendMessage(tabId, message, callback) {
           tabMessages.push({ tabId, message: structuredClone(message) });
+          if (deferSendMessageResponse) {
+            pendingTabMessageResponses.push(callback);
+            return;
+          }
           context.chrome.runtime.lastError = sendMessageLastError;
           callback(currentSettings);
           context.chrome.runtime.lastError = null;
@@ -96,6 +102,15 @@ async function runBackground({
     }
   }
 
+  function flushTabMessageResponse() {
+    const callback = pendingTabMessageResponses.shift();
+    if (!callback) return;
+
+    context.chrome.runtime.lastError = sendMessageLastError;
+    callback(currentSettings);
+    context.chrome.runtime.lastError = null;
+  }
+
   return {
     badgeColorCalls,
     badgeTextCalls,
@@ -104,6 +119,7 @@ async function runBackground({
     tabMessages,
     tabUpdateListeners,
     activateTab,
+    flushTabMessageResponse,
     sendMessage,
     updateActiveTab,
     updateTab,
@@ -165,7 +181,54 @@ test("background refreshes the active tab badge when a tab is activated", async 
   assert.deepEqual(runtime.tabMessages, [
     { tabId: 123, message: { action: "checkSettings" } },
   ]);
-  assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "R" }]);
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "" },
+    { tabId: 123, text: "R" },
+  ]);
+});
+
+test("background clears stale badge immediately before activation refresh", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+  const runtime = await runBackground({
+    currentSettings: {
+      ...latestSettings,
+      excludedDomains: ["unrelated.example"],
+    },
+    latestSettings,
+    deferSendMessageResponse: true,
+  });
+
+  runtime.sendMessage({
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: true,
+  });
+  runtime.activateTab(123);
+
+  assert.deepEqual(runtime.tabMessages, [
+    { tabId: 123, message: { action: "checkSettings" } },
+  ]);
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "R" },
+    { tabId: 123, text: "" },
+  ]);
+
+  runtime.flushTabMessageResponse();
+
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "R" },
+    { tabId: 123, text: "" },
+    { tabId: 123, text: "" },
+  ]);
 });
 
 test("background refreshes only active tabs after loading completes", async () => {
@@ -188,7 +251,48 @@ test("background refreshes only active tabs after loading completes", async () =
   assert.deepEqual(runtime.tabMessages, [
     { tabId: 456, message: { action: "checkSettings" } },
   ]);
-  assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 456, text: "R" }]);
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 456, text: "" },
+    { tabId: 456, text: "R" },
+  ]);
+});
+
+test("background clears stale badge immediately before load-complete refresh", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: true,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+  const runtime = await runBackground({
+    currentSettings: latestSettings,
+    latestSettings,
+    deferSendMessageResponse: true,
+  });
+
+  runtime.sendMessage({
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: true,
+  });
+  runtime.updateActiveTab(123, { status: "complete" });
+
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "R" },
+    { tabId: 123, text: "" },
+  ]);
+
+  runtime.flushTabMessageResponse();
+
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "R" },
+    { tabId: 123, text: "" },
+    { tabId: 123, text: "" },
+  ]);
 });
 
 test("background clears the badge when active-tab content script is unavailable", async () => {
@@ -200,7 +304,10 @@ test("background clears the badge when active-tab content script is unavailable"
 
   runtime.activateTab(123);
 
-  assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "" }]);
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "" },
+    { tabId: 123, text: "" },
+  ]);
   assert.deepEqual(runtime.badgeColorCalls, []);
 });
 
@@ -226,7 +333,40 @@ test("background keeps excluded pages clear using popup reload rules", async () 
 
   runtime.activateTab(123);
 
-  assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "" }]);
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "" },
+    { tabId: 123, text: "" },
+  ]);
+});
+
+test("background clears badge for non-applicable pages with stale enabled or rule changes", async () => {
+  const latestSettings = {
+    enabled: false,
+    excludedTags: { a: true, div: true, pre: true, span: true },
+    hostname: "example.com",
+    isBrowserAndPageLanguageDifferent: false,
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: true,
+    addTranslateNo: false,
+    excludedDomains: [],
+  };
+  const runtime = await runBackground({
+    currentSettings: {
+      ...latestSettings,
+      enabled: true,
+      excludedTags: { a: false, div: false, pre: true, span: false },
+      skipStyledCodeTags: false,
+      addTranslateNo: true,
+    },
+    latestSettings,
+  });
+
+  runtime.activateTab(123);
+
+  assert.deepEqual(runtime.badgeTextCalls, [
+    { tabId: 123, text: "" },
+    { tabId: 123, text: "" },
+  ]);
 });
 
 test("background keeps badge clear when unrelated excluded domains are added or deleted", async () => {
@@ -264,7 +404,10 @@ test("background keeps badge clear when unrelated excluded domains are added or 
 
     runtime.activateTab(123);
 
-    assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "" }]);
+    assert.deepEqual(runtime.badgeTextCalls, [
+      { tabId: 123, text: "" },
+      { tabId: 123, text: "" },
+    ]);
   }
 });
 
@@ -303,6 +446,9 @@ test("background sets badge when current hostname is added to or deleted from ex
 
     runtime.activateTab(123);
 
-    assert.deepEqual(runtime.badgeTextCalls, [{ tabId: 123, text: "R" }]);
+    assert.deepEqual(runtime.badgeTextCalls, [
+      { tabId: 123, text: "" },
+      { tabId: 123, text: "R" },
+    ]);
   }
 });
