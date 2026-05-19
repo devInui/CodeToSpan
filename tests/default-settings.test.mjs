@@ -435,6 +435,24 @@ test("options settings container is not a submitting form", async () => {
   assert.match(html, /<button\s+id="addDomain"\s+type="button"/);
 });
 
+test("options RUN STOP toggle lives in the title header", async () => {
+  const html = await readFile(path.join(rootDir, "options.html"), "utf8");
+  const header = html.match(/<header class="settings-header">[\s\S]*?<\/header>/);
+  const settingsManagement = html.match(
+    /<section class="settings-section reset-section">[\s\S]*?<\/section>/,
+  );
+
+  assert.ok(header);
+  assert.ok(settingsManagement);
+  assert.match(
+    header[0],
+    /STOP[\s\S]*<input type="checkbox" id="enabled" aria-label="RUN \/ STOP" \/>[\s\S]*RUN/,
+  );
+  assert.doesNotMatch(settingsManagement[0], /id="enabled"/);
+  assert.doesNotMatch(settingsManagement[0], /RunStopControl/);
+  assert.doesNotMatch(settingsManagement[0], /RunStopControlDescription/);
+});
+
 test("options can switch RUN STOP without reload prompt", async () => {
   const { context, elements, storageSetValues } = await loadOptionsContext({
     enabled: true,
