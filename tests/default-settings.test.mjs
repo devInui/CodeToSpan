@@ -413,6 +413,8 @@ test("excluded domain rows render remove button before domain text", async () =>
   const [row] = elements.get("excludedDomainsList").children;
   assert.equal(row.children[0].className, "removeDomain");
   assert.equal(row.children[0].type, "button");
+  assert.equal(row.children[0].textContent, "");
+  assert.equal(row.children[0]["aria-label"], "Remove domain");
   assert.equal(row.children[1].className, "domain-name");
   assert.equal(row.children[1].textContent, "example.com");
 });

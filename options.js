@@ -81,9 +81,9 @@ function updateExcludedDomainsList(domains) {
     domainSpan.className = "domain-name";
 
     var removeButton = document.createElement("button");
-    removeButton.textContent = "X";
     removeButton.className = "removeDomain";
     removeButton.type = "button";
+    removeButton.setAttribute("aria-label", "Remove domain");
     removeButton.setAttribute("data-domain", domain);
 
     li.appendChild(removeButton);

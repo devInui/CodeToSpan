@@ -179,6 +179,13 @@ p {
   min-height: 32px;
   margin: 0;
   padding: 0;
+  transition:
+    transform 0.16s ease,
+    background-color 0.16s ease;
+}
+
+#excludedDomainsList li:hover {
+  transform: translateY(-1px);
 }
 
 .domain-name {
@@ -187,6 +194,7 @@ p {
   white-space: nowrap;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  transform: translateY(-1.5px);
 }
 
 .domain-name::-webkit-scrollbar {
@@ -194,24 +202,48 @@ p {
 }
 
 .removeDomain {
+  position: relative;
   width: 28px;
   height: 28px;
   flex: 0 0 auto;
-  border: 1px solid #f2b8b5;
-  border-radius: 7px;
-  background: #fff5f5;
-  color: var(--danger);
-  font-weight: 800;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #98a2b3;
+  padding: 0;
   cursor: pointer;
   transition:
     background-color 0.16s ease,
     border-color 0.16s ease,
+    color 0.16s ease,
     box-shadow 0.16s ease;
 }
 
+.removeDomain::before,
+.removeDomain::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 11px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: center;
+}
+
+.removeDomain::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.removeDomain::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 .removeDomain:hover {
-  border-color: #ef8f8a;
-  background: #ffe8e8;
+  border-color: #d0d5dd;
+  background: #f8fafc;
+  color: #667085;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
 }
 
