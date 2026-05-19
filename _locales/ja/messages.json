@@ -92,6 +92,12 @@
   "SettingsManagementTitle": {
     "message": "設定管理"
   },
+  "RunStopControl": {
+    "message": "RUN / STOP"
+  },
+  "RunStopControlDescription": {
+    "message": "拡張機能のON/OFFを切り替えます。変更後、開いている対象タブは再読み込みが必要になる場合があります。"
+  },
   "AutoReloadOnRunStop": {
     "message": "RUN/STOP変更後に自動で再読み込み"
   },

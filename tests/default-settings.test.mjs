@@ -221,12 +221,14 @@ async function readOptionsDefaults() {
 }
 
 async function loadOptionsContext({
+  enabled = true,
   excludedDomains = [],
   onAlert = () => {},
 } = {}) {
   const html = await readFile(path.join(rootDir, "options.html"), "utf8");
   const elements = new Map();
   const storageSetValues = [];
+  const storageChangeListeners = [];
 
   for (const [, id] of html.matchAll(/\bid="([^"]+)"/g)) {
     elements.set(id, new TestElement(id));
@@ -242,12 +244,17 @@ async function loadOptionsContext({
       },
       storage: {
         sync: {
-          get(_defaults, callback) {
-            callback({ excludedDomains: [...excludedDomains] });
+          get(defaults, callback) {
+            callback({ ...defaults, enabled, excludedDomains: [...excludedDomains] });
           },
           set(values, callback) {
             storageSetValues.push(structuredClone(values));
             callback?.();
+          },
+        },
+        onChanged: {
+          addListener(listener) {
+            storageChangeListeners.push(listener);
           },
         },
       },
@@ -280,7 +287,7 @@ async function loadOptionsContext({
   const code = await readFile(path.join(rootDir, "options.js"), "utf8");
   vm.runInContext(code, context, { filename: "options.js" });
 
-  return { context, elements, storageSetValues };
+  return { context, elements, storageChangeListeners, storageSetValues };
 }
 
 class TestElement {
@@ -348,7 +355,7 @@ test("active default settings stay aligned across settings, popup, and options",
   assert.deepEqual(popupDefaults, pick(sourceDefaults, activeDefaultKeys));
   assert.deepEqual(
     loadDefaults,
-    pick(sourceDefaults, activeDefaultKeys.filter((key) => key !== "enabled")),
+    pick(sourceDefaults, activeDefaultKeys),
   );
   assert.deepEqual(
     resetDefaults,
@@ -424,7 +431,54 @@ test("options settings container is not a submitting form", async () => {
 
   assert.match(html, /<div id="optionsForm">/);
   assert.doesNotMatch(html, /<form id="optionsForm">/);
+  assert.doesNotMatch(html, /OptionsLead/);
   assert.match(html, /<button\s+id="addDomain"\s+type="button"/);
+});
+
+test("options can switch RUN STOP without reload prompt", async () => {
+  const { context, elements, storageSetValues } = await loadOptionsContext({
+    enabled: true,
+  });
+
+  context.initializeEventListeners();
+  elements.get("enabled").checked = false;
+  elements.get("enabled").listeners.change();
+
+  assert.deepEqual(storageSetValues, [{ enabled: false }]);
+});
+
+test("options sync open page state from storage changes", async () => {
+  const { context, elements, storageChangeListeners } = await loadOptionsContext({
+    enabled: true,
+    excludedDomains: ["before.example"],
+  });
+
+  context.loadSettings();
+  context.initializeStorageChangeListener();
+
+  assert.equal(elements.get("enabled").checked, true);
+  assert.equal(
+    elements.get("excludedDomainsList").children[0].children[1].textContent,
+    "before.example",
+  );
+
+  storageChangeListeners[0](
+    {
+      enabled: { oldValue: true, newValue: false },
+      excludedDomains: {
+        oldValue: ["before.example"],
+        newValue: ["after.example"],
+      },
+    },
+    "sync",
+  );
+
+  assert.equal(elements.get("enabled").checked, false);
+  assert.equal(elements.get("excludedDomainsList").children.length, 1);
+  assert.equal(
+    elements.get("excludedDomainsList").children[0].children[1].textContent,
+    "after.example",
+  );
 });
 
 test("adding a unique domain clears the input after storing it", async () => {

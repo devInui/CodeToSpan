@@ -9,7 +9,6 @@
     <main class="settings-shell">
       <header class="settings-header">
         <h1 data-i18n="OptionsTitle"></h1>
-        <p data-i18n="OptionsLead"></p>
       </header>
 
       <div id="optionsForm">
@@ -63,6 +62,11 @@
 
             <section class="settings-section reset-section">
               <h2 data-i18n="SettingsManagementTitle"></h2>
+              <label class="checkbox-label">
+                <input type="checkbox" id="enabled" />
+                <span data-i18n="RunStopControl"></span>
+              </label>
+              <p class="setting-note" data-i18n="RunStopControlDescription"></p>
               <label class="checkbox-label">
                 <input type="checkbox" id="autoReloadOnRunStop" />
                 <span data-i18n="AutoReloadOnRunStop"></span>

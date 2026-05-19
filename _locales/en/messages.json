@@ -92,6 +92,12 @@
   "SettingsManagementTitle": {
     "message": "Settings Management"
   },
+  "RunStopControl": {
+    "message": "RUN / STOP"
+  },
+  "RunStopControlDescription": {
+    "message": "Switch the extension on or off. Open target tabs may need reload after this changes."
+  },
   "AutoReloadOnRunStop": {
     "message": "Reload automatically after RUN/STOP changes"
   },

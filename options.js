@@ -31,11 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
   applyI18nMessages();
   loadSettings();
   initializeEventListeners();
+  initializeStorageChangeListener();
 });
 
 function loadSettings() {
   chrome.storage.sync.get(
     {
+      enabled: true,
       excludedTags: { a: false, div: false, pre: true, span: false },
       isLanguageCheckEnabled: true,
       skipStyledCodeTags: false,
@@ -44,6 +46,7 @@ function loadSettings() {
       excludedDomains: [],
     },
     function (data) {
+      updateEnabledControl(data.enabled);
       document.getElementById("excludePre").checked =
         !!data.excludedTags["pre"];
       document.getElementById("excludeDiv").checked =
@@ -93,6 +96,8 @@ function updateExcludedDomainsList(domains) {
 }
 
 function initializeEventListeners() {
+  document.getElementById("enabled").addEventListener("change", saveEnabled);
+
   ["excludePre", "excludeDiv", "excludeA", "excludeSpan"].forEach((id) => {
     document.getElementById(id).addEventListener("change", saveExcludedTags);
   });
@@ -126,6 +131,37 @@ function initializeEventListeners() {
   document
     .getElementById("newDomain")
     .addEventListener("keypress", enterKeyDomainAdd);
+}
+
+function initializeStorageChangeListener() {
+  if (!chrome.storage.onChanged) {
+    return;
+  }
+
+  chrome.storage.onChanged.addListener(function (changes, areaName) {
+    if (areaName !== "sync") {
+      return;
+    }
+
+    if (changes.enabled) {
+      updateEnabledControl(changes.enabled.newValue);
+    }
+
+    if (changes.excludedDomains) {
+      updateExcludedDomainsList(changes.excludedDomains.newValue || []);
+    }
+  });
+}
+
+function updateEnabledControl(enabled) {
+  document.getElementById("enabled").checked = !!enabled;
+}
+
+function saveEnabled() {
+  var enabled = document.getElementById("enabled").checked;
+  chrome.storage.sync.set({ enabled: enabled }, function () {
+    console.log("Extension enabled setting saved:", enabled);
+  });
 }
 
 function saveExcludedTags() {

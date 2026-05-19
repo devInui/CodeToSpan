@@ -207,9 +207,9 @@ p {
   height: 28px;
   flex: 0 0 auto;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 7px;
   background: transparent;
-  color: #98a2b3;
+  color: #667085;
   padding: 0;
   cursor: pointer;
   transition:
@@ -225,8 +225,8 @@ p {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 11px;
-  height: 2px;
+  width: 9px;
+  height: 1.5px;
   border-radius: 999px;
   background: currentColor;
   transform-origin: center;
@@ -241,10 +241,10 @@ p {
 }
 
 .removeDomain:hover {
-  border-color: #d0d5dd;
-  background: #f8fafc;
-  color: #667085;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+  border-color: transparent;
+  background: #fff1f1;
+  color: var(--danger);
+  box-shadow: none;
 }
 
 #domainInputContainer {
