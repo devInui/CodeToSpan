@@ -625,12 +625,49 @@ test("add domain stores the content script hostname and reloads after confirmati
     hostname: "content-script.example",
   };
 
-  const { confirmMessages, elements, reloadedTabs } = await runPopup({
-    currentSettings,
-    latestSettings,
-    activeTabUrl: "https://tab-url.example/path",
-    confirmReload: true,
-  });
+  const { confirmMessages, elements, reloadedTabs, runtimeMessages } =
+    await runPopup({
+      currentSettings,
+      latestSettings,
+      activeTabUrl: "https://tab-url.example/path",
+      confirmReload: true,
+    });
+
+  elements.get("check-domain").listeners.click();
+  runtimeMessages.length = 0;
+  elements.get("add-current-domain").listeners.click();
+
+  assert.equal(elements.get("add-current-domain").textContent, "Added");
+  assert.equal(elements.get("add-current-domain").disabled, true);
+  assert.deepEqual(confirmMessages, ["Domain added. Reload current tab?"]);
+  assert.deepEqual(reloadedTabs, [123]);
+  assert.deepEqual(runtimeMessages, [
+    { action: "updateReloadBadge", tabId: 123, reloadRequired: false },
+  ]);
+});
+
+test("add domain marks the current tab reload-required when reload is declined", async () => {
+  const latestSettings = {
+    enabled: true,
+    excludedTags: { a: false, div: false, pre: true, span: false },
+    isLanguageCheckEnabled: true,
+    skipStyledCodeTags: false,
+    addTranslateNo: true,
+    excludedDomains: [],
+  };
+  const currentSettings = {
+    ...latestSettings,
+    hostname: "content-script.example",
+    isBrowserAndPageLanguageDifferent: true,
+  };
+
+  const { confirmMessages, elements, reloadedTabs, runtimeMessages, tabMessages } =
+    await runPopup({
+      currentSettings,
+      latestSettings,
+      activeTabUrl: "https://tab-url.example/path",
+      confirmReload: false,
+    });
 
   elements.get("check-domain").listeners.click();
   elements.get("add-current-domain").listeners.click();
@@ -638,7 +675,17 @@ test("add domain stores the content script hostname and reloads after confirmati
   assert.equal(elements.get("add-current-domain").textContent, "Added");
   assert.equal(elements.get("add-current-domain").disabled, true);
   assert.deepEqual(confirmMessages, ["Domain added. Reload current tab?"]);
-  assert.deepEqual(reloadedTabs, [123]);
+  assert.deepEqual(reloadedTabs, []);
+  assert.deepEqual(tabMessages, [
+    { action: "checkSettings" },
+    { action: "checkSettings" },
+    { action: "checkSettings" },
+  ]);
+  assert.deepEqual(runtimeMessages.at(-1), {
+    action: "updateReloadBadge",
+    tabId: 123,
+    reloadRequired: true,
+  });
 });
 
 test("check domain shows unavailable state when the content script has no hostname", async () => {

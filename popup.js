@@ -208,8 +208,15 @@ function addCurrentDomain() {
       if (confirm("Domain added. Reload current tab?")) {
         getActiveTab(function (tab) {
           if (tab) {
+            updateReloadBadge(tab.id, false);
             chrome.tabs.reload(tab.id);
             window.close();
+          }
+        });
+      } else {
+        getActiveTab(function (tab) {
+          if (tab) {
+            recomputeReloadStateForTab(tab.id);
           }
         });
       }
