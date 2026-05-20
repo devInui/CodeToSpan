@@ -1,21 +1,37 @@
 # CodeToSpan Release Notes
 
-## CodeToSpan 2.3 - Release Date: upcoming
+## CodeToSpan 2.3.0 - Release Date: upcoming
 
 ### New Features
 
-- Improved clarity on the necessity of reloading each tab after changing settings.
-- Added a page notification system that detects outdated settings in open tabs, allowing users to view a list of changes.
-- Introduced a Reset Settings button in the Options page, making it easier to revert settings to their defaults (excluding domain exclusions).
-- We have added multilingual support for Japanese on the Options page.
+- Added reload-required detection for already open tabs.
+- Added an `R` badge on the extension icon when the active tab needs reload.
+- Added `Outdated Settings Detected.` details in the popup.
+- Added `Check Domain` in the popup.
+- Added a popup flow to add the current hostname to `Exclude Domains`.
+- Added an automatic reload option for `RUN` / `STOP` changes.
+- Added `RUN` / `STOP` control to the Options page.
+
+### Improvements
+
+- Refreshed the popup layout and moved Options / Check Domain under Show More.
+- Reorganized the Options page by setting purpose.
+- Improved Exclude Domains row controls and input behavior.
+- Kept excluded pages from showing unnecessary reload warnings.
+- Synchronized open Options pages when settings are changed from the popup.
 
 ### Bug Fixes
 
-- Fixed an issue where the default settings in the Options page were not being applied correctly.
+- Fixed stale reload warning and `R` badge states after popup and Options changes.
+- Fixed Options page form submission that appended query parameters such as `?excludePre=on`.
+- Fixed cases where unrelated Exclude Domains changes triggered unnecessary reload warnings.
+- Fixed default settings consistency across content script, popup, and Options.
 
-### Other
+### Internal
 
-- Performed some refactoring
+- Shared reload-required decision logic between popup and background through an ES module.
+- Added automated tests for popup, background, Options, default settings, and extension smoke checks.
+- Removed internal debug console output for detected hostnames.
 
 ## CodeToSpan 2.2 - Release Date: 2023/12/05
 
