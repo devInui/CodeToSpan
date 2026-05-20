@@ -41,7 +41,7 @@ v2.3 regression points identified during the repair work.
 
 ## Manual Chrome Verification
 
-Use [docs/manual-chrome-extension-verification.ja.md](docs/manual-chrome-extension-verification.ja.md)
+Use [manual-chrome-extension-verification.md](/docs/manual-chrome-extension-verification.md)
 for manual checks that require loading the unpacked extension in Chrome.
-An English version is available at
-[docs/manual-chrome-extension-verification.md](docs/manual-chrome-extension-verification.md).
+Japanese version:
+[manual-chrome-extension-verification.ja.md](/docs/manual-chrome-extension-verification.ja.md).
