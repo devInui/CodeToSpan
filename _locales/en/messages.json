@@ -1,6 +1,6 @@
 {
   "Description": {
-    "message": "Corrects translation errors in programming docs by replacing code tags with span tags, enhancing readability."
+    "message": "Improves machine translation of programming docs by protecting inline code and reducing layout issues."
   },
   "OptionsTitle": {
     "message": "CodeToSpan Options"
