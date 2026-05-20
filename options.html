@@ -2,97 +2,120 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>CodeToSpan Options</title>
+    <title data-i18n="OptionsTitle"></title>
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
-    <h1>CodeToSpan Options</h1>
-    <form id="optionsForm">
-      <h2>Exclude Tags:</h2>
-      <div class="options-container">
-        <div class="checkbox-label">
-          <input type="checkbox" id="excludePre" name="excludePre" />
-          <label for="excludePre"><code>&lt;pre&gt;</code></label>
+    <main class="settings-shell">
+      <header class="settings-header">
+        <h1 data-i18n="OptionsTitle"></h1>
+        <div class="header-toggle-row" aria-label="RUN / STOP">
+          <span class="toggle-label stop-label">STOP</span>
+          <div class="toggle">
+            <input type="checkbox" id="enabled" aria-label="RUN / STOP" />
+            <label for="enabled" class="slider"></label>
+          </div>
+          <span class="toggle-label run-label">RUN</span>
         </div>
-        <div class="checkbox-label">
-          <input type="checkbox" id="excludeDiv" name="excludeDiv" />
-          <label for="excludeDiv"><code>&lt;div&gt;</code></label>
-        </div>
-        <div class="checkbox-label">
-          <input type="checkbox" id="excludeA" name="excludeA" />
-          <label for="excludeA"><code>&lt;a&gt;</code></label>
-        </div>
-        <div class="checkbox-label">
-          <input type="checkbox" id="excludeSpan" name="excludeSpan" />
-          <label for="excludeSpan"><code>&lt;span&gt;</code></label>
-        </div>
-      </div>
-      <p class="description">
-        Select tags where <code>&lt;code&gt;</code> elements will not be
-        converted to <code>&lt;span&gt;</code> tags.
-      </p>
+      </header>
 
-      <h2>Apply Language-Based Control</h2>
-      <div class="checkbox-label">
-        <input type="checkbox" id="isLanguageCheckEnabled" />
-        <label for="isLanguageCheckEnabled">
-          Enable language-based filtering
-        </label>
-      </div>
-      <p class="description">
-        When enabled, the extension will only apply modifications if the page's
-        language differs from your browser's language.
-      </p>
+      <div id="optionsForm">
+        <div class="settings-grid">
+          <div class="settings-columns">
+            <section class="settings-section page-language">
+              <h2 data-i18n="PageLanguageTitle"></h2>
+              <p class="description" data-i18n="PageLanguageDescription"></p>
+              <label class="checkbox-label">
+                <input type="checkbox" id="isLanguageCheckEnabled" />
+                <span data-i18n="EnableLanguageDetection"></span>
+              </label>
+            </section>
 
-      <h2>Skip Styled Code Tags</h2>
-      <div class="checkbox-label">
-        <label>
-          <input type="checkbox" id="skipStyledCodeTags" /> block and
-          inline-block elements
-        </label>
-      </div>
-      <p class="description">
-        Skips replacing <code>&lt;code&gt;</code> tags styled as block elements
-        to prevent layout disruptions due to changes in text width from
-        translations.
-      </p>
+            <section class="settings-section code-rules">
+              <h2 data-i18n="CodeElementRulesTitle"></h2>
+              <p class="description" data-i18n-description="ExcludeTagsDescription"></p>
+              <div class="options-container">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="excludePre" name="excludePre" />
+                  <span data-i18n="InPreTag"></span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="excludeDiv" name="excludeDiv" />
+                  <span data-i18n="InDivTag"></span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="excludeA" name="excludeA" />
+                  <span data-i18n="InATag"></span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="excludeSpan" name="excludeSpan" />
+                  <span data-i18n="InSpanTag"></span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="skipStyledCodeTags" />
+                  <span data-i18n="ProtectSizedCodeBlocks"></span>
+                </label>
+              </div>
+              <p class="setting-note" data-i18n="ProtectSizedCodeDescription"></p>
+            </section>
 
-      <h2>Add translate="no" to</h2>
-      <div class="checkbox-label">
-        <label
-          ><input type="checkbox" id="addNoTranslateToPre" />
-          <code>&lt;pre&gt;</code></label
-        >
-      </div>
-      <p class="description">
-        Automatically add a "no translate" attribute to
-        <code>&lt;pre&gt;</code> tags to prevent translation of code blocks
-        without code tags.
-      </p>
-      <h2><button id="resetSettings" type="button">Reset Settings</button></h2>
+            <section class="settings-section translate-attributes">
+              <h2 data-i18n="TranslateAttributesTitle"></h2>
+              <p class="description" data-i18n-description="TranslateNoDescription"></p>
+              <label class="checkbox-label">
+                <input type="checkbox" id="addNoTranslateToPre" />
+                <span data-i18n="AddTranslateNoToPre"></span>
+              </label>
+            </section>
 
-      <h2>Exclude Domains</h2>
-      <div class="options-container">
-        <div id="domainListContainer">
-          <ul id="excludedDomainsList"></ul>
+            <section class="settings-section reset-section">
+              <h2 data-i18n="SettingsManagementTitle"></h2>
+              <label class="checkbox-label">
+                <input type="checkbox" id="autoReloadOnRunStop" />
+                <span data-i18n="AutoReloadOnRunStop"></span>
+              </label>
+              <p class="setting-note" data-i18n="AutoReloadOnRunStopDescription"></p>
+              <div class="reset-row management-reset-row">
+                <p class="description" data-i18n="ResetSettingsDescription"></p>
+                <button
+                  id="resetSettings"
+                  type="button"
+                  data-i18n="ResetButton"
+                ></button>
+              </div>
+            </section>
+          </div>
+
+          <section class="settings-section domains-section">
+            <h2 data-i18n="ExcludeDomainsTitle"></h2>
+            <div class="options-container">
+              <div id="domainListContainer">
+                <ul id="excludedDomainsList"></ul>
+              </div>
+              <div id="domainInputContainer">
+                <input
+                  type="text"
+                  id="newDomain"
+                  placeholder=""
+                  data-i18n-placeholder="AddDomainPlaceholder"
+                />
+                <button
+                  id="addDomain"
+                  type="button"
+                  data-i18n="AddDomainButton"
+                ></button>
+              </div>
+            </div>
+            <p
+              class="description"
+              data-i18n-description="ExcludeDomainsDescription"
+            ></p>
+          </section>
+
+          <div class="warning-message" data-i18n="ReloadWarning"></div>
         </div>
-        <div id="domainInputContainer">
-          <input type="text" id="newDomain" placeholder="Enter new domain..." />
-          <button id="addDomain">Add</button>
-        </div>
       </div>
-      <p class="description">
-        Add domains to exclude from this extension's processing. Recommended for
-        sites that generate <code>&lt;code&gt;</code> tags automatically, such
-        as generative AI.<br />
-        This extension is active, you can view the current page's domain in the
-        developer console.
-      </p>
-      <p class="warning-message">
-        ⚠ You need to reload each tab to apply the changes after modifying the
-        settings.
-      </p>
-    </form>
+    </main>
     <script src="options.js"></script>
   </body>
 </html>

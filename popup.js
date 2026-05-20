@@ -1,3 +1,5 @@
+import { getReloadRequiredDifferences as getReloadRequiredDifferencesCore } from "./src/reloadState.js";
+
 // ボタンがクリックされたときに実行される関数
 function toggleExtension() {
   chrome.storage.sync.get({ enabled: true }, function (data) {
@@ -31,13 +33,26 @@ function toggleExtension() {
           return;
         }
         if (tabs.length > 0) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            command: "toggle",
-            enabled: newEnabledState,
-          });
+          confirmReloadCurrentTab(tabs[0].id);
         }
       });
     });
+  });
+}
+
+function confirmReloadCurrentTab(tabId) {
+  chrome.storage.sync.get({ autoReloadOnRunStop: false }, function (data) {
+    if (
+      data.autoReloadOnRunStop ||
+      confirm("Reload current tab to apply this change?")
+    ) {
+      updateReloadBadge(tabId, false);
+      chrome.tabs.reload(tabId);
+      window.close();
+      return;
+    }
+
+    recomputeReloadStateForTab(tabId);
   });
 }
 
@@ -77,18 +92,165 @@ function switchLayoutText(toggleState) {
   }
 }
 
+function setMoreActionsExpanded(expanded) {
+  const moreActions = document.getElementById("more-actions");
+  const showMoreLabel = document.getElementById("show-more-label");
+  const showMoreIcon = document.getElementById("show-more-icon");
+
+  if (expanded) {
+    moreActions.classList.add("visible");
+  } else {
+    moreActions.classList.remove("visible");
+  }
+  showMoreLabel.textContent = expanded ? "Show Less" : "Show More";
+  showMoreIcon.classList.remove(expanded ? "down" : "up");
+  showMoreIcon.classList.add(expanded ? "up" : "down");
+}
+
+chrome.storage.local.get({ popupShowMoreExpanded: false }, function (data) {
+  setMoreActionsExpanded(data.popupShowMoreExpanded);
+});
+
+document
+  .getElementById("show-more-toggle")
+  .addEventListener("click", function () {
+    const moreActions = document.getElementById("more-actions");
+    const expanded = !moreActions.classList.contains("visible");
+    setMoreActionsExpanded(expanded);
+    chrome.storage.local.set({ popupShowMoreExpanded: expanded });
+  });
+
 document
   .getElementById("openOptionsPage")
-  .addEventListener("click", function () {
+  .addEventListener("click", function (event) {
     event.preventDefault();
     chrome.runtime.openOptionsPage();
   });
 
-// 設定の変更を検知
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  if (tabs.length === 0) return;
+let currentDomainForAdd = "";
+
+function getActiveTab(callback) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError || tabs.length === 0) {
+      callback(null);
+      return;
+    }
+    callback(tabs[0]);
+  });
+}
+
+function showDomainUnavailable() {
+  currentDomainForAdd = "";
+  const domainCheck = document.getElementById("domain-check");
+  const currentDomain = document.getElementById("current-domain");
+  const addButton = document.getElementById("add-current-domain");
+
+  domainCheck.classList.add("visible", "unavailable");
+  currentDomain.textContent = "Domain unavailable";
+  addButton.disabled = true;
+  addButton.textContent = "Add";
+}
+
+function showDomainCheck(hostname, domains) {
+  currentDomainForAdd = hostname;
+  const domainCheck = document.getElementById("domain-check");
+  const currentDomain = document.getElementById("current-domain");
+  const addButton = document.getElementById("add-current-domain");
+  const isAdded = domains.includes(hostname);
+
+  domainCheck.classList.add("visible");
+  domainCheck.classList.remove("unavailable");
+  currentDomain.textContent = hostname;
+  addButton.disabled = isAdded;
+  addButton.textContent = isAdded ? "Added" : "Add";
+}
+
+function checkCurrentDomain() {
+  getActiveTab(function (tab) {
+    if (!tab) {
+      showDomainUnavailable();
+      return;
+    }
+
+    chrome.tabs.sendMessage(
+      tab.id,
+      { action: "checkSettings" },
+      function (response) {
+        const hostname =
+          response?.success !== false && typeof response?.hostname === "string"
+            ? response.hostname
+            : "";
+
+        if (chrome.runtime.lastError || !hostname) {
+          showDomainUnavailable();
+          return;
+        }
+
+        chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
+          showDomainCheck(hostname, data.excludedDomains);
+        });
+      },
+    );
+  });
+}
+
+function addCurrentDomain() {
+  if (!currentDomainForAdd) return;
+
+  chrome.storage.sync.get({ excludedDomains: [] }, function (data) {
+    const domains = data.excludedDomains;
+    if (domains.includes(currentDomainForAdd)) {
+      showDomainCheck(currentDomainForAdd, domains);
+      return;
+    }
+
+    const updatedDomains = domains.concat(currentDomainForAdd);
+    chrome.storage.sync.set({ excludedDomains: updatedDomains }, function () {
+      showDomainCheck(currentDomainForAdd, updatedDomains);
+      if (confirm("Domain added. Reload current tab?")) {
+        getActiveTab(function (tab) {
+          if (tab) {
+            updateReloadBadge(tab.id, false);
+            chrome.tabs.reload(tab.id);
+            window.close();
+          }
+        });
+      } else {
+        getActiveTab(function (tab) {
+          if (tab) {
+            recomputeReloadStateForTab(tab.id);
+          }
+        });
+      }
+    });
+  });
+}
+
+document
+  .getElementById("check-domain")
+  .addEventListener("click", checkCurrentDomain);
+
+document
+  .getElementById("add-current-domain")
+  .addEventListener("click", addCurrentDomain);
+
+function updateReloadBadge(tabId, reloadRequired) {
+  chrome.runtime.sendMessage(
+    { action: "updateReloadBadge", tabId, reloadRequired },
+    function () {
+      if (chrome.runtime.lastError) {
+        console.log(
+          "[CodeToSpan] Could not update reload badge:",
+          chrome.runtime.lastError,
+        );
+      }
+    },
+  );
+}
+
+function recomputeReloadStateForTab(tabId) {
   chrome.tabs.sendMessage(
-    tabs[0].id,
+    tabId,
     { action: "checkSettings" },
     (response) => {
       console.log(
@@ -101,6 +263,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           "[CodeToSpan] Error sending message:",
           chrome.runtime.lastError,
         );
+        displaySettingWarning([]);
+        updateReloadBadge(tabId, false);
         return;
       }
 
@@ -108,74 +272,133 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         console.log(
           "[CodeToSpan] Error: No response received from content script.",
         );
+        displaySettingWarning([]);
+        updateReloadBadge(tabId, false);
         return;
       }
+
+      if (response.success === false) {
+        console.log(
+          "[CodeToSpan] Content script could not provide settings:",
+          response.error,
+        );
+        displaySettingWarning([]);
+        updateReloadBadge(tabId, false);
+        return;
+      }
+
       chrome.storage.sync.get(
         {
           enabled: true,
           excludedTags: { a: false, div: false, pre: true, span: false },
           isLanguageCheckEnabled: true,
           skipStyledCodeTags: false,
-          addTranslateNo: false,
+          addTranslateNo: true,
+          autoReloadOnRunStop: false,
           excludedDomains: [],
         },
         (latestSettings) => {
           console.log("[CodeToSpan] Latest storage settings:", latestSettings);
 
-          let differences = getSettingDifferences(response, latestSettings);
+          let differences = getReloadRequiredDifferences(
+            response,
+            latestSettings,
+          );
 
           if (differences.length > 0) {
             console.log("[CodeToSpan] Detected differences:", differences);
-            displaySettingWarning(differences);
           }
+          displaySettingWarning(differences);
+          updateReloadBadge(tabId, differences.length > 0);
         },
       );
     },
   );
+}
+
+// 設定の変更を検知
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  if (tabs.length === 0) return;
+  recomputeReloadStateForTab(tabs[0].id);
 });
 
 function getSettingDifferences(current, latest) {
-  let diffs = [];
+  const diffs = [];
 
   if (current.enabled !== latest.enabled) {
-    diffs.push(`Extension was ${latest.enabled ? "enabled" : "disabled"}`);
+    diffs.push({
+      category: "Extension Status",
+      text: `Status: ${formatEnabled(current.enabled)} -> ${formatEnabled(
+        latest.enabled,
+      )}`,
+    });
   }
   if (
     JSON.stringify(current.excludedTags) !== JSON.stringify(latest.excludedTags)
   ) {
-    const changes = [];
-    for (const tag in latest.excludedTags) {
-      if (current.excludedTags[tag] !== latest.excludedTags[tag]) {
-        changes.push(
-          `${tag}: ${current.excludedTags[tag]} → ${latest.excludedTags[tag]}`,
-        );
-      }
-    }
-    diffs.push(`Exclude Tags changed: ${changes.join(", ")}`);
+    diffs.push({
+      category: "Code Element Rules",
+      text: `Parent tags: ${formatParentTags(
+        current.excludedTags,
+      )} -> ${formatParentTags(latest.excludedTags)}`,
+    });
   }
   if (current.isLanguageCheckEnabled !== latest.isLanguageCheckEnabled) {
-    diffs.push(
-      `Language-Based Control: ${current.isLanguageCheckEnabled} → ${latest.isLanguageCheckEnabled}`,
-    );
+    diffs.push({
+      category: "Page Language",
+      text: `Another language only: ${formatOnOff(
+        current.isLanguageCheckEnabled,
+      )} -> ${formatOnOff(latest.isLanguageCheckEnabled)}`,
+    });
   }
   if (current.skipStyledCodeTags !== latest.skipStyledCodeTags) {
-    diffs.push(
-      `Skip Styled Code Tags: ${current.skipStyledCodeTags} → ${latest.skipStyledCodeTags}`,
-    );
+    diffs.push({
+      category: "Code Element Rules",
+      text: `Sized code blocks: ${formatOnOff(
+        current.skipStyledCodeTags,
+      )} -> ${formatOnOff(latest.skipStyledCodeTags)}`,
+    });
   }
   if (current.addTranslateNo !== latest.addTranslateNo) {
-    diffs.push(
-      `Add translate="no" setting: ${current.addTranslateNo} → ${latest.addTranslateNo}`,
-    );
+    diffs.push({
+      category: "Translate Attributes",
+      text: `translate="no": ${formatOnOff(
+        current.addTranslateNo,
+      )} -> ${formatOnOff(latest.addTranslateNo)}`,
+    });
   }
   if (
     JSON.stringify(current.excludedDomains) !==
     JSON.stringify(latest.excludedDomains)
   ) {
-    diffs.push("Excluded Domains list changed");
+    diffs.push({
+      category: "Exclude Domains",
+      text: "Domain list changed",
+    });
   }
 
   return diffs;
+}
+
+function getReloadRequiredDifferences(current, latest) {
+  return getReloadRequiredDifferencesCore(current, latest, {
+    getSettingDifferences,
+    isExcludedDomainsDifference: (difference) =>
+      difference.category === "Exclude Domains",
+  });
+}
+
+function formatEnabled(enabled) {
+  return enabled ? "RUN" : "STOP";
+}
+
+function formatOnOff(enabled) {
+  return enabled ? "ON" : "OFF";
+}
+
+function formatParentTags(excludedTags) {
+  const tags = ["pre", "div", "a", "span"].filter((tag) => excludedTags[tag]);
+  return tags.length > 0 ? tags.join(", ") : "none";
 }
 
 function displaySettingWarning(differences) {
@@ -191,66 +414,21 @@ function displaySettingWarning(differences) {
     return;
   }
 
-  // カテゴリ分類
-  const categories = {
-    "Extension was": "🛠️ Extension Status",
-    "Exclude Tags changed": "🏷️ Excluded Tags",
-    "Language-Based Control": "🈵 Language Control",
-    "Skip Styled Code Tags": "🎨 Skip Styled Code",
-    'Add translate="no" setting': "🌍 Translate Attribute",
-    "Excluded Domains list changed": "🌐 Excluded Domains",
-  };
-
   let categorizedChanges = {};
 
   // 各変更をカテゴリごとに整理
   differences.forEach((diff) => {
-    let foundCategory = null;
-
-    // カテゴリのキーに部分一致するものを検索
-    for (const key in categories) {
-      if (diff.startsWith(key)) {
-        foundCategory = key;
-        break;
-      }
+    if (!categorizedChanges[diff.category]) {
+      categorizedChanges[diff.category] = [];
     }
-
-    if (foundCategory) {
-      if (!categorizedChanges[foundCategory]) {
-        categorizedChanges[foundCategory] = [];
-      }
-
-      if (foundCategory === "Extension was") {
-        // RUN → STOP 形式に変更
-        const wasEnabled = diff.includes("enabled");
-        categorizedChanges[foundCategory].push(
-          wasEnabled ? "RUN → STOP" : "STOP → RUN",
-        );
-      } else if (foundCategory === "Exclude Tags changed") {
-        // `Exclude Tags changed` の場合、タグごとに改行
-        let tagChanges = diff.replace(foundCategory + ": ", "").split(", ");
-        tagChanges.forEach((tagChange) => {
-          categorizedChanges[foundCategory].push(tagChange);
-        });
-      } else {
-        categorizedChanges[foundCategory].push(
-          diff.replace(foundCategory + ": ", ""),
-        );
-      }
-    } else {
-      // 該当しないものは "Other" カテゴリに
-      if (!categorizedChanges["Other"]) {
-        categorizedChanges["Other"] = [];
-      }
-      categorizedChanges["Other"].push(diff);
-    }
+    categorizedChanges[diff.category].push(diff.text);
   });
 
   // カテゴリごとにリスト表示
   for (const category in categorizedChanges) {
     let categoryTitle = document.createElement("div");
     categoryTitle.classList.add("settings-category");
-    categoryTitle.textContent = categories[category] || category;
+    categoryTitle.textContent = category;
     diffList.appendChild(categoryTitle);
 
     categorizedChanges[category].forEach((change) => {
@@ -266,9 +444,14 @@ function displaySettingWarning(differences) {
   } else {
     warningDiv.classList.remove("visible");
   }
-  reloadButton.onclick = () => {
-    chrome.tabs.reload(() => {
-      chrome.tabs.reload();
-    });
-  };
 }
+
+// Reloadボタンのクリックイベントリスナー
+document.getElementById("reload-page").addEventListener("click", function () {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (tabs.length > 0) {
+      chrome.tabs.reload(tabs[0].id);
+      window.close(); // ポップアップを閉じる
+    }
+  });
+});

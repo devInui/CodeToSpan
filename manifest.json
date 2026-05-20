@@ -16,11 +16,20 @@
     "default_title": "CodeToSpan for Translation",
     "default_popup": "popup.html"
   },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": [
+        "src/settings.js",
+        "src/domProcessor.js",
+        "src/messageHandler.js",
+        "src/content.js"
+      ],
       "run_at": "document_idle"
     }
   ]

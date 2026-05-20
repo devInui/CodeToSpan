@@ -1,5 +1,122 @@
 {
   "Description": {
-    "message": "Corrects translation errors in programming docs by replacing code tags with span tags, enhancing readability."
+    "message": "Improves machine translation of programming docs by protecting inline code and reducing layout issues."
+  },
+  "OptionsTitle": {
+    "message": "CodeToSpan Options"
+  },
+  "OptionsLead": {
+    "message": "Settings are grouped by purpose, with domain actions placed on the left."
+  },
+  "PageLanguageTitle": {
+    "message": "Page Language"
+  },
+  "PageLanguageDescription": {
+    "message": "Compare the page language with your browser language and process pages that are likely to be translated."
+  },
+  "CodeElementRulesTitle": {
+    "message": "Code Element Rules"
+  },
+  "ExcludeTagsTitle": {
+    "message": "Exclude in Parent Tags:"
+  },
+  "ExcludeTagsDescription": {
+    "message": "Select parent tags where code elements will not be converted"
+  },
+  "InPreTag": {
+    "message": "In <pre>"
+  },
+  "InDivTag": {
+    "message": "In <div>"
+  },
+  "InATag": {
+    "message": "In <a>"
+  },
+  "InSpanTag": {
+    "message": "In <span>"
+  },
+  "LanguageControlTitle": {
+    "message": "Language-Based Control"
+  },
+  "LanguageControlDescription": {
+    "message": "When enabled, the extension will only apply modifications if the page's language differs from your browser's language."
+  },
+  "EnableLanguageDetection": {
+    "message": "Enable language detection"
+  },
+  "SkipStyledCodeTitle": {
+    "message": "Skip Styled Code Tags:"
+  },
+  "SkipStyledCodeDescription": {
+    "message": "Skip conversion for code tags with specific styles"
+  },
+  "ProtectSizedCodeBlocks": {
+    "message": "Protect sized code blocks"
+  },
+  "ProtectSizedCodeDescription": {
+    "message": "Code elements with their own size are not converted."
+  },
+  "BlockStyleElements": {
+    "message": "Block and Inline-Block style elements"
+  },
+  "TranslateNoTitle": {
+    "message": "Add translate=\"no\" into"
+  },
+  "TranslateAttributesTitle": {
+    "message": "Translate Attributes"
+  },
+  "TranslateNoDescription": {
+    "message": "Add attributes to elements that should be excluded from machine translation."
+  },
+  "AddTranslateNoToPre": {
+    "message": "Add translate=\"no\" to <pre>"
+  },
+  "AddToPreTags": {
+    "message": "<pre>"
+  },
+  "ExcludeDomainsTitle": {
+    "message": "Exclude Domains"
+  },
+  "ExcludeDomainsDescription": {
+    "message": "Add domains to exclude from this extension's processing. Recommended for sites that generate code tags automatically, ex. generative-AI sites."
+  },
+  "AddDomainPlaceholder": {
+    "message": "Enter domain to exclude"
+  },
+  "AddDomainButton": {
+    "message": "Add"
+  },
+  "ResetSettingsButton": {
+    "message": "Reset Settings"
+  },
+  "SettingsManagementTitle": {
+    "message": "Settings Management"
+  },
+  "AutoReloadOnRunStop": {
+    "message": "Reload automatically after RUN/STOP changes"
+  },
+  "AutoReloadOnRunStopDescription": {
+    "message": "When enabled, the current tab reloads without confirmation after RUN/STOP changes."
+  },
+  "ResetSettingsTitle": {
+    "message": "Reset Settings"
+  },
+  "ResetSettingsDescription": {
+    "message": "Restore settings other than excluded domains to their defaults."
+  },
+  "ResetButton": {
+    "message": "Reset"
+  },
+  "ResetConfirmMessage": {
+    "message": "Are you sure you want to reset settings? This will not affect the excluded domains."
+  },
+  "DomainExistsMessage": {
+    "message": "This domain already exists."
+  },
+  "EnterDomainMessage": {
+    "message": "Please enter a domain name."
+  },
+  "ReloadWarning": {
+    "message": "Open tabs need reload. After settings changes, target tabs that are already open must be reloaded. The extension icon shows an R badge on those tabs."
   }
 }

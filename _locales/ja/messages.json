@@ -1,5 +1,122 @@
 {
   "Description": {
-    "message": "プログラムのドキュメントをページ翻訳したとき、うまく翻訳できなかった経験はありませんか？この拡張機能は、テキスト内のコードタグによる翻訳の歪みをspanタグに置き換えることで、その問題を解決します。"
+    "message": "プログラミングドキュメントのページ翻訳で、インラインコードによる翻訳崩れやレイアウト崩れを軽減します。"
+  },
+  "OptionsTitle": {
+    "message": "CodeToSpan オプション"
+  },
+  "OptionsLead": {
+    "message": "設定項目を用途ごとに整理し、除外ドメインの行操作を左端に寄せる案です。"
+  },
+  "PageLanguageTitle": {
+    "message": "ページ言語"
+  },
+  "PageLanguageDescription": {
+    "message": "ページの言語とブラウザー言語を比較して、翻訳対象になりやすいページだけ処理します。"
+  },
+  "CodeElementRulesTitle": {
+    "message": "code要素のルール"
+  },
+  "ExcludeTagsTitle": {
+    "message": "親タグによる除外:"
+  },
+  "ExcludeTagsDescription": {
+    "message": "code要素を変換しない親タグを選択します"
+  },
+  "InPreTag": {
+    "message": "<pre>内"
+  },
+  "InDivTag": {
+    "message": "<div>内"
+  },
+  "InATag": {
+    "message": "<a>内"
+  },
+  "InSpanTag": {
+    "message": "<span>内"
+  },
+  "LanguageControlTitle": {
+    "message": "言語に基づく制御"
+  },
+  "LanguageControlDescription": {
+    "message": "有効にすると、ページの言語がブラウザーの言語と異なる場合にのみ拡張機能の変更を適用します。"
+  },
+  "EnableLanguageDetection": {
+    "message": "言語検出を有効にする"
+  },
+  "SkipStyledCodeTitle": {
+    "message": "スタイル付きcodeタグをスキップ:"
+  },
+  "SkipStyledCodeDescription": {
+    "message": "特定のスタイルを持つcodeタグは変換しません"
+  },
+  "ProtectSizedCodeBlocks": {
+    "message": "サイズを持つcodeブロックを保護"
+  },
+  "ProtectSizedCodeDescription": {
+    "message": "サイズを持つcode要素は変換しません。"
+  },
+  "BlockStyleElements": {
+    "message": "blockおよびinline-blockスタイルの要素"
+  },
+  "TranslateNoTitle": {
+    "message": "translate=\"no\"を追加"
+  },
+  "TranslateAttributesTitle": {
+    "message": "翻訳属性"
+  },
+  "TranslateNoDescription": {
+    "message": "機械翻訳から除外したい要素に属性を追加します。"
+  },
+  "AddTranslateNoToPre": {
+    "message": "<pre>にtranslate=\"no\"を追加"
+  },
+  "AddToPreTags": {
+    "message": "<pre>"
+  },
+  "ExcludeDomainsTitle": {
+    "message": "除外ドメイン"
+  },
+  "ExcludeDomainsDescription": {
+    "message": "この拡張機能の処理から除外するドメインを追加します。生成AIサイトなど、codeタグを自動生成するサイトでの使用を推奨します。"
+  },
+  "AddDomainPlaceholder": {
+    "message": "除外するドメインを入力"
+  },
+  "AddDomainButton": {
+    "message": "追加"
+  },
+  "ResetSettingsButton": {
+    "message": "設定をリセット"
+  },
+  "SettingsManagementTitle": {
+    "message": "設定管理"
+  },
+  "AutoReloadOnRunStop": {
+    "message": "RUN/STOP変更後に自動で再読み込み"
+  },
+  "AutoReloadOnRunStopDescription": {
+    "message": "有効にすると、RUN/STOP変更後に確認せず現在タブを再読み込みします。"
+  },
+  "ResetSettingsTitle": {
+    "message": "設定をリセット"
+  },
+  "ResetSettingsDescription": {
+    "message": "除外ドメイン以外の設定を初期値に戻します。"
+  },
+  "ResetButton": {
+    "message": "リセット"
+  },
+  "ResetConfirmMessage": {
+    "message": "設定をリセットしてもよろしいですか？除外ドメインには影響しません。"
+  },
+  "DomainExistsMessage": {
+    "message": "このドメインはすでに存在します。"
+  },
+  "EnterDomainMessage": {
+    "message": "ドメイン名を入力してください。"
+  },
+  "ReloadWarning": {
+    "message": "開いているタブは再読み込みが必要です。設定変更後、すでに開いている対象タブは再読み込みが必要です。対象タブでは拡張機能アイコンにRバッジが付きます。"
   }
 }

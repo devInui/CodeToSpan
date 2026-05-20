@@ -1,3 +1,10 @@
 /archiveFiles/
 *.zip
 .vscode
+
+# Local AI coordination and investigation notes
+AGENTS.md
+docs/multi-agent/
+.codex/
+v2.3-repair-project-summary.html
+docs/remove-domain-button-proposals.html
