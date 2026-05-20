@@ -1,9 +1,9 @@
-# Testing
+# Development
 
 This project currently uses Node.js built-in test tooling only. No external
 packages are required.
 
-## Commands
+## Verification Commands
 
 On Windows PowerShell, use `npm.cmd` because `npm.ps1` may be blocked by the
 local execution policy.
