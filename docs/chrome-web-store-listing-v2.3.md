@@ -10,11 +10,7 @@ Chrome Web Store の入力欄は Markdown ではなくプレーンテキスト�
 CodeToSpan for Translation
 ```
 
-Managed by `manifest.json`:
-
-```json
-"name": "CodeToSpan for Translation"
-```
+Managed by `manifest.json`.
 
 ### Package summary
 
@@ -22,13 +18,7 @@ Managed by `manifest.json`:
 Improves machine translation of programming docs by protecting inline code and reducing layout issues.
 ```
 
-Managed by `_locales/en/messages.json`:
-
-```json
-"Description": {
-  "message": "Improves machine translation of programming docs by protecting inline code and reducing layout issues."
-}
-```
+Managed by `_locales/en/messages.json`.
 
 ### Description
 
@@ -84,11 +74,7 @@ CodeToSpan for Translation v2.3 improves popup, Options, and reload handling.
 CodeToSpan for Translation
 ```
 
-`manifest.json` で管理:
-
-```json
-"name": "CodeToSpan for Translation"
-```
+`manifest.json` で管理。
 
 ### パッケージの概要
 
@@ -96,13 +82,7 @@ CodeToSpan for Translation
 プログラミングドキュメントのページ翻訳で、インラインコードによる翻訳崩れやレイアウト崩れを軽減します。
 ```
 
-`_locales/ja/messages.json` で管理:
-
-```json
-"Description": {
-  "message": "プログラミングドキュメントのページ翻訳で、インラインコードによる翻訳崩れやレイアウト崩れを軽減します。"
-}
-```
+`_locales/ja/messages.json` で管理。
 
 ### 説明
 
