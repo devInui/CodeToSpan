@@ -1,62 +1,22 @@
-# v2.3 Store / GitHub Update Proposal
+# Chrome Web Store Listing - v2.3
 
-## 確認した現在の公開情報
+Chrome Web Store の入力欄は Markdown ではなくプレーンテキストとして扱う。各コードブロック内の本文をコピーして使う。
 
-### Chrome Web Store
+## English - en
 
-確認日: 2026-05-20
-
-- 公開名: `CodeToSpan for Translation`
-- 現在のストア表示バージョン: `2.2`
-- 最終更新日: `January 2, 2024`
-- カテゴリ: `Extension Developer Tools`
-- ユーザー数: `549 users`
-- 評価: `4.9 / 5`, `11 ratings`
-- 現在の説明では、`Run/Stop` の切替は自動でページを再読み込みすると説明されている。
-- 現在の説明では、v2.3 の `Outdated Settings Detected.`, `R` バッジ, `Check Domain`, popup からの除外ドメイン追加は説明されていない。
-- Privacy 表示では `Website content` を扱う拡張機能として表示されている。
-
-参照: https://chromewebstore.google.com/detail/codetospan-for-translatio/ebnohmjaodacnofjhknnjjnchanjleng
-
-### GitHub
-
-確認日: 2026-05-20
-
-- Repository: `devInui/CodeToSpan`
-- About: `This is chrome chrome extension for translation of program docs`
-- Stars: `19`
-- Forks: `1`
-- Releases: `No releases published`
-- README は v2.2 相当の説明で、`Run/Stop` は自動リロードと説明されている。
-- README には v2.3 の popup / options UI, `R` バッジ, `Check Domain`, reload warning の説明がない。
-
-参照: https://github.com/devInui/CodeToSpan
-
-## 更新方針
-
-v2.3 は軽微な修正ではなく、popup / options UI と既存タブへの設定反映通知を改善する機能追加・安定化リリースとして扱う。
-
-ただし、拡張機能の主目的、権限、設定データの大枠は変わっていないため、`3.0` ではなく `2.3.0` として説明する。
-
-Chrome Web Store の各入力欄は Markdown ではなくプレーンテキストとして扱う。以下のコードブロック内の本文をコピーして使う。
-
-## Chrome Web Store 貼り付け用テキスト
-
-### English - en
-
-#### Package title
+### Package title
 
 ```text
 CodeToSpan for Translation
 ```
 
-#### Package summary
+### Package summary
 
 ```text
 Improves machine translation of programming docs by protecting inline code and reducing layout issues.
 ```
 
-#### Description
+### Description
 
 ```text
 CodeToSpan for Translation helps programming learners read translated documentation more comfortably.
@@ -87,7 +47,7 @@ Release notes:
 https://github.com/devInui/CodeToSpan/blob/master/RELEASE.md
 ```
 
-#### What's new / release notes
+### What's new / release notes
 
 ```text
 CodeToSpan for Translation v2.3 improves popup, Options, and reload handling.
@@ -102,21 +62,21 @@ CodeToSpan for Translation v2.3 improves popup, Options, and reload handling.
 - Removed internal debug console output for detected hostnames.
 ```
 
-### Japanese - ja
+## Japanese - ja
 
-#### パッケージのタイトル
+### パッケージのタイトル
 
 ```text
 CodeToSpan for Translation
 ```
 
-#### パッケージの概要
+### パッケージの概要
 
 ```text
 プログラミングドキュメントのページ翻訳で、インラインコードによる翻訳崩れやレイアウト崩れを軽減します。
 ```
 
-#### 説明
+### 説明
 
 ```text
 CodeToSpan for Translation は、プログラミングドキュメントをブラウザのページ翻訳で読むときの読みづらさを軽減する Chrome 拡張機能です。
@@ -147,7 +107,7 @@ Release notes:
 https://github.com/devInui/CodeToSpan/blob/master/RELEASE.md
 ```
 
-#### 更新内容
+### 更新内容
 
 ```text
 CodeToSpan for Translation v2.3 では、popup、Options ページ、設定変更後の再読み込み通知を改善しました。
@@ -161,69 +121,3 @@ CodeToSpan for Translation v2.3 では、popup、Options ページ、設定変�
 - 除外中のページでは不要な再読み込み警告を出さないようにしました。
 - hostname 検出時の内部デバッグ用 console 出力を削除しました。
 ```
-
-## スクリーンショット更新案
-
-最低限差し替えるべき画像:
-
-1. popup 通常表示: `RUN / STOP` と `Show More`
-2. popup 展開表示: `Options`, `Check Domain`
-3. popup domain 表示: hostname と `Add` / `Added`
-4. popup warning 表示: `Outdated Settings Detected.`
-5. 拡張機能アイコン: `R` バッジ
-6. Options page 全体: 用途別カテゴリ、タイトル横の RUN / STOP
-7. Exclude Domains: 左端の削除ボタンと Add 入力欄
-
-## Privacy / Data handling
-
-現時点の実装では、新しい外部通信や新しい権限は追加していない。
-
-v2.3 で明示的に確認すべき点:
-
-- `permissions` は `storage` のまま。
-- content script はページ内の code 要素と hostname を扱う。
-- hostname は `chrome.storage.sync` の `excludedDomains` に保存される場合がある。
-- リモートサーバーへの送信は行っていない。
-
-ストアの privacy 表示は `Website content` のままで矛盾しない見込み。
-
-## GitHub 更新案
-
-### Repository About
-
-現在:
-
-> This is chrome chrome extension for translation of program docs
-
-候補:
-
-> Chrome extension that improves machine translation of programming documentation by protecting code tags.
-
-### README / RELEASE
-
-- `README.md` は日本語メインに更新済み。
-- `README.en.md` を英語版として追加済み。
-- `RELEASE.md` の v2.3.0 項目は今回の実装内容に合わせて更新済み。
-
-### GitHub Release
-
-GitHub Releases が未作成のため、v2.3.0 公開時に tag / release を作成する案。
-
-- Tag: `v2.3.0`
-- Title: `CodeToSpan 2.3.0`
-- Body: `RELEASE.md` の `2.3.0` と同じ内容を短縮して掲載。
-
-## 更新順序案
-
-1. 実Chromeで最終ユーザーテストを完了する。
-2. Chrome Web Store 用スクリーンショットを撮影する。
-3. GitHub に v2.3.0 変更を反映する。
-4. Chrome Web Store の説明・スクリーンショット・更新内容を反映する。
-5. ストア審査後、GitHub Release を作成する。
-
-## 注意点
-
-- `v2.3` は新機能を含むため、ストア説明では「minor fixes」ではなく「popup and settings workflow improvements」として扱う。
-- `Run/Stop automatically reloads the page` という古い説明は削除または修正する。
-- console 出力削除は、ユーザー向け機能ではないが、開発者向け変更として release notes の Internal に入れる。
-- `Exclude Domains` はサブドメイン一致ではなく hostname 完全一致であることを、README か Q&A に明記する。
