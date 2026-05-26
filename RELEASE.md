@@ -1,6 +1,6 @@
 # CodeToSpan Release Notes
 
-## CodeToSpan 2.3.0 - Release Date: upcoming
+## CodeToSpan 2.3.0 - Release Date: 2026/05/20
 
 ### New Features
 
